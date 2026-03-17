@@ -2,10 +2,8 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { CreditCard, QrCode, ArrowRight, CheckCircle2, Clock, Car, ExternalLink } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
-import { initMercadoPago } from '@mercadopago/sdk-react';
 
-// Inicializar con la clave pública
-initMercadoPago(import.meta.env.VITE_MP_PUBLIC_KEY);
+// Inicialización de Mercado Pago removida: se maneja vía Supabase Edge Functions
 
 export default function ClientePago() {
   const [codigoTicket, setCodigoTicket] = useState('');
@@ -57,36 +55,35 @@ export default function ClientePago() {
 
   const generarPreferencia = async (ticketData, totalMonto) => {
     try {
-      const response = await fetch('https://api.mercadopago.com/checkout/preferences', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${import.meta.env.VITE_MP_ACCESS_TOKEN}`
-        },
-        body: JSON.stringify({
-          items: [
-            {
-              title: `Estadía Estacionamiento - Plaza ${ticketData.plazas.numero}`,
-              quantity: 1,
-              unit_price: totalMonto,
-              currency_id: 'ARS'
-            }
-          ],
-          back_urls: {
-            success: window.location.href,
-            failure: window.location.href,
-            pending: window.location.href
-          },
-          auto_return: 'approved',
+      const { data, error } = await supabase.functions.invoke('create-preference', {
+        body: {
+          title: `Estadía Estacionamiento - Plaza ${ticketData.plazas.numero}`,
+          quantity: 1,
+          price: totalMonto,
           external_reference: ticketData.codigo_qr
-        })
+        }
       });
 
-      const data = await response.json();
-      setPreferenceId(data.id);
-      setInitPoint(data.init_point);
+      if (error) {
+        // Intentar obtener el mensaje de error del cuerpo de la respuesta si es posible
+        if (error.context && typeof error.context.json === 'function') {
+           const details = await error.context.json();
+           throw new Error(details.error || details.message || error.message);
+        }
+        throw error;
+      }
+      
+      console.log('Preferencia MP generada vía Edge Function:', data);
+      
+      if (data.init_point) {
+        setPreferenceId(data.id);
+        setInitPoint(data.init_point);
+      } else {
+        throw new Error('No se recibió la URL de pago de Mercado Pago');
+      }
     } catch (error) {
-      console.error('Error generando preferencia:', error);
+      console.error('Error detallado:', error);
+      alert('Error: ' + (error.message || 'Fallo al comunicarse con Mercado Pago.'));
     }
   };
 
@@ -236,46 +233,51 @@ export default function ClientePago() {
             {/* MP Blue Gradient Background */}
             <div className="absolute inset-0 bg-blue-600/5 opacity-20 group-hover:opacity-40 transition-opacity"></div>
             
-            <div className="relative z-10 text-center">
-              <div className="w-16 h-16 bg-[#009EE3] rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-blue-500/20">
+            <div className="relative z-10 text-center flex flex-col items-center">
+              <div className="w-16 h-16 bg-[#009EE3] rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-blue-500/20">
                 <QrCode className="w-10 h-10 text-white" />
               </div>
               
               <h3 className="text-xl font-black text-white mb-2">Escanee para Pagar</h3>
               <p className="text-xs text-dark-muted font-bold uppercase tracking-widest mb-10">Interface Mercado Pago</p>
 
-              <div className="bg-white p-6 rounded-[2rem] mx-auto w-max mb-10 shadow-2xl relative border-4 border-[#009EE3]/10">
+              <div className="bg-white p-6 rounded-[2rem] mb-10 shadow-2xl relative border-4 border-[#009EE3]/10">
                 {!ticket && (
                   <div className="absolute inset-0 bg-white/90 backdrop-blur-sm flex items-center justify-center rounded-[2rem] z-20">
-                    <p className="px-6 text-[10px] font-black text-black/40 uppercase tracking-widest leading-relaxed">Primero valide su ticket<br/>en el panel izquierdo</p>
+                    <p className="px-6 text-[10px] font-black text-black/40 uppercase tracking-widest leading-relaxed text-center">Primero valide su ticket<br/>en el panel izquierdo</p>
+                  </div>
+                )}
+                {ticket && !initPoint && (
+                  <div className="absolute inset-0 bg-white/90 backdrop-blur-sm flex items-center justify-center rounded-[2rem] z-20">
+                    <div className="flex flex-col items-center gap-3">
+                      <div className="w-8 h-8 border-4 border-[#009EE3]/20 border-t-[#009EE3] rounded-full animate-spin"></div>
+                      <p className="text-[10px] font-black text-[#009EE3] uppercase tracking-widest">Generando Pago...</p>
+                    </div>
                   </div>
                 )}
                 <QRCodeSVG 
-                  value={initPoint || 'PENDING'}
-                  size={200}
-                  level="H"
+                  value={initPoint || 'https://www.mercadopago.com.ar'}
+                  size={220}
+                  level="M"
                   includeMargin={true}
-                  imageSettings={{
-                    src: 'https://upload.wikimedia.org/wikipedia/commons/b/b0/Logo_Mercado_Pago.png',
-                    x: undefined,
-                    y: undefined,
-                    height: 24,
-                    width: 24,
-                    excavate: true,
-                  }}
                 />
               </div>
 
               {ticket && (
-                <a 
-                  href={initPoint}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2 text-[#009EE3] font-bold text-xs uppercase tracking-widest mb-8 hover:underline"
-                >
-                  <ExternalLink className="w-4 h-4" />
-                  Abrir en Mercado Pago
-                </a>
+                <div className="flex flex-col items-center gap-3 mb-8 w-full">
+                  <a 
+                    href={initPoint}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-2 text-[#009EE3] font-bold text-sm uppercase tracking-widest hover:underline"
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                    Abrir en Mercado Pago (Web)
+                  </a>
+                  <p className="text-[10px] text-dark-muted font-medium text-center px-6">
+                    Escanee el código con su cámara o con la App de Mercado Pago
+                  </p>
+                </div>
               )}
 
               <button 
