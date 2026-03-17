@@ -43,44 +43,61 @@ export default function OperarioDashboard() {
     }
   };
 
-  if (loading) return <div className="text-gray-500">Cargando monitoreo de plazas...</div>;
+  if (loading) return (
+    <div className="flex flex-col items-center justify-center h-64 gap-4">
+      <div className="w-10 h-10 border-4 border-brand/20 border-t-brand rounded-full animate-spin"></div>
+      <p className="text-dark-muted font-bold text-sm uppercase tracking-widest">Sincronizando Plazas...</p>
+    </div>
+  );
 
   return (
-    <div>
-      <div className="flex items-center gap-3 mb-6">
-        <Monitor className="w-8 h-8 text-indigo-600" />
-        <h2 className="text-2xl font-bold text-gray-800">Monitoreo de Plazas</h2>
+    <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+      <div className="flex items-center gap-4 mb-10">
+        <div className="p-3 bg-brand/10 border border-brand/20 rounded-2xl">
+          <Monitor className="w-8 h-8 text-brand" />
+        </div>
+        <div>
+          <h2 className="text-3xl font-black text-white tracking-tight leading-none mb-1">Monitoreo en Tiempo Real</h2>
+          <p className="text-dark-muted font-bold text-xs uppercase tracking-widest">Estado de ocupación por sectores</p>
+        </div>
       </div>
 
-      <div className="space-y-6">
+      <div className="grid gap-8">
         {sectores.map((sector) => {
           const plazasLibres = sector.plazas?.filter(p => p.estado === 'libre').length || 0;
-          const totalPlazas = sector.capacidad;
+          const totalPlazas = sector.plazas?.length || 0;
 
           return (
-            <div key={sector.id_sector} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-              <div className="p-4 border-b bg-slate-50 flex justify-between items-center">
-                <h3 className="text-lg font-bold text-gray-900">{sector.nombre}</h3>
-                <span className={`px-3 py-1 rounded-full text-sm font-medium ${plazasLibres > 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-                  {plazasLibres} de {totalPlazas} libres
-                </span>
+            <div key={sector.id_sector} className="dark-card overflow-hidden group hover:border-brand/30">
+              <div className="p-6 border-b border-dark-border bg-white/[0.02] flex justify-between items-center group-hover:bg-brand/5 transition-colors duration-500">
+                <div>
+                  <h3 className="text-xl font-black text-white mb-1">{sector.nombre}</h3>
+                  <p className="text-[10px] font-black text-dark-muted uppercase tracking-widest">Capacidad Instalada</p>
+                </div>
+                <div className="text-right">
+                  <div className={`text-2xl font-black ${plazasLibres > 0 ? 'text-green-500' : 'text-red-500'}`}>
+                    {plazasLibres} / {totalPlazas}
+                  </div>
+                  <p className="text-[10px] font-black text-dark-muted uppercase tracking-widest">Plazas Libres</p>
+                </div>
               </div>
 
-              <div className="p-6">
-                <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-3">
+              <div className="p-8">
+                <div className="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-10 lg:grid-cols-12 gap-3">
                   {sector.plazas?.sort((a,b) => a.numero.localeCompare(b.numero, undefined, {numeric: true})).map((plaza) => {
-                    let bgColor = 'bg-green-100 text-green-700 border-green-200'; // libre
-                    if (plaza.estado === 'ocupada') bgColor = 'bg-red-100 text-red-700 border-red-200';
-                    if (plaza.estado === 'mantenimiento') bgColor = 'bg-slate-200 text-slate-500 border-slate-300 opacity-50';
+                    let style = 'bg-white/5 text-dark-muted border-white/5'; // default
+                    if (plaza.estado === 'libre') style = 'bg-green-500/10 text-green-400 border-green-500/20 hover:bg-green-500/20';
+                    if (plaza.estado === 'ocupada') style = 'bg-red-500/10 text-red-400 border-red-500/20 hover:bg-red-500/20 shadow-[0_0_15px_rgba(239,68,68,0.05)]';
+                    if (plaza.estado === 'mantenimiento') style = 'bg-dark-bg text-dark-muted/30 border-dark-border opacity-30';
                     
                     return (
                       <div
                         key={plaza.id_plaza}
                         title={`Plaza ${plaza.estado}`}
                         className={`
-                          flex flex-col items-center justify-center p-3 rounded-lg border-2 
-                          transition-all duration-200 font-mono font-bold
-                          ${bgColor}
+                          flex flex-col items-center justify-center p-3 rounded-xl border-2 
+                          transition-all duration-300 font-mono font-black text-sm
+                          ${style}
                         `}
                       >
                         {plaza.numero}
@@ -94,8 +111,9 @@ export default function OperarioDashboard() {
         })}
 
         {sectores.length === 0 && (
-          <div className="text-center py-12 text-gray-500 bg-white rounded-xl border border-dashed border-gray-300">
-            No hay sectores habilitados actualmente.
+          <div className="text-center py-20 dark-card border-dashed">
+            <p className="text-dark-muted font-bold uppercase tracking-[0.2em]">No hay sectores habilitados</p>
+            <p className="text-xs text-dark-muted/50 mt-2">Configure los sectores desde el panel de administración.</p>
           </div>
         )}
       </div>

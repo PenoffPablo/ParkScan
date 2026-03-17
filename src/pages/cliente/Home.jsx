@@ -13,7 +13,7 @@ export default function ClienteHome() {
 
   useEffect(() => {
     fetchDisponibilidad();
-    
+
     const plazasSubscription = supabase
       .channel('public_plazas_changes')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'plazas' }, () => {
@@ -38,7 +38,7 @@ export default function ClienteHome() {
         .neq('estado', 'mantenimiento');
 
       if (error) throw error;
-      
+
       const libres = plazas.filter(p => p.estado === 'libre').length;
       setTotalPlazas(plazas.length);
       setPlazasDisponibles(libres);
@@ -70,86 +70,109 @@ export default function ClienteHome() {
   const sinLugar = plazasDisponibles === 0;
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-6 text-center">
-      <div className="mb-12">
-        <Car className="w-16 h-16 text-accent mx-auto mb-4" />
-        <h1 className="text-5xl font-extrabold text-slate-900 mb-2 tracking-tight">ParkScan</h1>
-        <p className="text-xl text-slate-500 font-medium">Estacionamiento Automatizado</p>
+    <div className="min-h-screen bg-dark-bg flex flex-col items-center justify-center p-6 text-center relative overflow-hidden">
+      {/* Decorative Blur Elements */}
+      <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-brand/10 blur-[120px] rounded-full"></div>
+      <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-accent/10 blur-[120px] rounded-full"></div>
+
+      <div className="mb-12 relative">
+        <div className="p-5 bg-white/5 rounded-3xl border border-white/10 backdrop-blur-xl mb-6 mx-auto w-max shadow-2xl">
+          <Car className="w-16 h-16 text-brand" />
+        </div>
+        <h1 className="text-6xl font-black text-white mb-2 tracking-tighter leading-none">ParkScan</h1>
       </div>
 
       <div className={`
-        bg-white rounded-3xl p-10 shadow-xl border-2 mb-12 max-w-sm w-full transition-colors duration-500
-        ${sinLugar ? 'border-red-200 shadow-red-100' : 'border-green-200 shadow-green-100'}
+        glass-card p-12 mb-12 max-w-sm w-full transition-all duration-700 relative group
+        ${sinLugar ? 'border-red-500/30' : 'border-brand/30'}
       `}>
-        <h2 className="text-sm font-bold uppercase tracking-widest text-slate-400 mb-2">
-          Lugares Disponibles
+        <div className={`
+          absolute inset-0 rounded-2xl opacity-5 transition-opacity duration-700
+          ${sinLugar ? 'bg-red-500' : 'bg-brand'}
+        `}></div>
+
+        <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-dark-muted mb-4">
+          Plazas Disponibles
         </h2>
-        <div className={`text-8xl font-black mb-2 ${sinLugar ? 'text-red-500' : 'text-green-500'}`}>
+
+        <div className={`
+          text-9xl font-black mb-4 tracking-tighter transition-colors duration-700
+          ${sinLugar ? 'text-red-500' : 'text-white'}
+        `}>
           {plazasDisponibles}
         </div>
-        <p className="text-slate-500 font-medium">de {totalPlazas} plazas habilitadas</p>
+
+        <div className="flex items-center justify-center gap-2">
+          <div className={`w-2 h-2 rounded-full ${sinLugar ? 'bg-red-500' : 'bg-green-500'} animate-pulse`}></div>
+          <p className="text-dark-muted font-bold text-xs uppercase tracking-widest">Habilitadas: {totalPlazas}</p>
+        </div>
       </div>
 
       <button
         disabled={sinLugar || generando}
         onClick={handleImprimirTicket}
         className={`
-          flex items-center gap-3 px-8 py-5 rounded-2xl text-xl font-bold text-white shadow-lg transition-all duration-300
+          flex items-center gap-4 px-10 py-6 rounded-2xl text-xl font-bold text-white shadow-2xl transition-all duration-500 relative overflow-hidden group
           ${(sinLugar || generando)
-            ? 'bg-slate-300 cursor-not-allowed opacity-70' 
-            : 'bg-accent hover:bg-opacity-90 hover:scale-105 active:scale-95 shadow-accent/20'
+            ? 'bg-dark-card border border-dark-border opacity-50 cursor-not-allowed'
+            : 'bg-brand hover:scale-105 active:scale-95 shadow-brand/40'
           }
         `}
       >
-        <Printer className="w-6 h-6" />
-        {generando ? 'Generando...' : sinLugar ? 'Estacionamiento Lleno' : 'Imprimir Ticket de Ingreso'}
+        <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        <Printer className="w-7 h-7" />
+        <span>{generando ? 'Procesando...' : sinLugar ? 'Sin disponibilidad' : 'Imprimir Ticket'}</span>
       </button>
 
       {/* MODAL DEL TICKET GENERADO */}
       {ticketAsignado && (
-        <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50 p-4 backdrop-blur-sm">
-          <div className="bg-white rounded-3xl p-8 max-w-sm w-full shadow-2xl relative text-center">
-            <button 
+        <div className="fixed inset-0 bg-dark-bg/80 flex justify-center items-center z-50 p-4 backdrop-blur-xl transition-all animate-in fade-in zoom-in duration-300">
+          <div className="bg-dark-card border border-dark-border rounded-[2.5rem] p-10 max-w-sm w-full shadow-[0_0_50px_rgba(0,0,0,0.5)] relative text-center">
+            <button
               onClick={() => setTicketAsignado(null)}
-              className="absolute top-4 right-4 text-gray-400 hover:text-gray-900 bg-gray-100 rounded-full p-2"
+              className="absolute top-6 right-6 text-dark-muted hover:text-white bg-white/5 rounded-full p-2 transition-colors border border-white/5"
             >
               <X className="w-5 h-5" />
             </button>
-            <h3 className="text-2xl font-bold text-gray-900 mb-6">Tu Ticket de Ingreso</h3>
-            
-            <div className="bg-slate-50 border-2 border-slate-100 rounded-2xl p-6 mb-8 flex flex-col items-center">
-              <div className="mb-6 p-4 bg-white rounded-xl shadow-sm">
-                 <QRCodeSVG 
-                    value={ticketAsignado.codigo_qr} 
-                    size={160}
-                    level="Q"
-                    includeMargin={true}
-                 />
+
+            <h3 className="text-2xl font-black text-white mb-8 tracking-tight">Tu Ticket de Acceso</h3>
+
+            <div className="bg-white rounded-3xl p-8 mb-8 flex flex-col items-center shadow-inner relative">
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-brand text-[10px] font-black text-white px-4 py-1 rounded-full uppercase tracking-widest">
+                Escanéame
               </div>
-              <p className="text-sm text-gray-400 mb-1">CÓDIGO DE BARRA</p>
-              <p className="font-mono font-bold text-lg text-gray-800 tracking-widest">{ticketAsignado.codigo_qr}</p>
+              <QRCodeSVG
+                value={ticketAsignado.codigo_qr}
+                size={180}
+                level="Q"
+                includeMargin={false}
+              />
             </div>
 
-            <div className="grid grid-cols-2 gap-4 mb-6">
-              <div className="bg-indigo-50 p-4 rounded-xl border border-indigo-100">
-                <p className="text-xs text-indigo-400 font-bold uppercase">Sector</p>
-                <p className="text-lg font-bold text-indigo-900">{ticketAsignado.sectorNombre}</p>
+            <p className="font-mono font-bold text-xl text-white tracking-[.25em] mb-8 bg-white/5 p-4 rounded-xl border border-white/5">
+              {ticketAsignado.codigo_qr}
+            </p>
+
+            <div className="grid grid-cols-2 gap-4 mb-8">
+              <div className="bg-white/5 p-5 rounded-2xl border border-white/5">
+                <p className="text-[10px] text-dark-muted font-black uppercase tracking-widest mb-1">Sector</p>
+                <p className="text-xl font-black text-white">{ticketAsignado.sectorNombre}</p>
               </div>
-              <div className="bg-accent-bg p-4 rounded-xl border border-accent/20">
-                <p className="text-xs text-accent/70 font-bold uppercase">Plaza asignada</p>
-                <p className="text-2xl font-black text-accent">{ticketAsignado.plazaNombre}</p>
+              <div className="bg-brand/10 p-5 rounded-2xl border border-brand/20">
+                <p className="text-[10px] text-brand font-black uppercase tracking-widest mb-1">Cajón</p>
+                <p className="text-3xl font-black text-brand leading-none">{ticketAsignado.plazaNombre}</p>
               </div>
             </div>
 
-            <p className="text-sm text-gray-500 font-medium">Por favor, conserve este ticket o tome una captura para salir y realizar el pago.</p>
+            <p className="text-xs text-dark-muted font-medium px-4">Por favor, conserve este ticket para validar su salida en caja.</p>
           </div>
         </div>
       )}
 
-      {/* FOOTER DE ACCESO RÁPIDO (SOLO PARA DESARROLLO/TESTEO) */}
-      <div className="mt-16 pt-8 border-t border-slate-200 flex gap-6 text-sm">
-        <a href="/admin/login" className="text-slate-400 hover:text-accent transition-colors font-medium">Portal Admin</a>
-        <a href="/operario/login" className="text-slate-400 hover:text-indigo-600 transition-colors font-medium">Portal Operario</a>
+      {/* FOOTER DE ACCESO RÁPIDO */}
+      <div className="mt-20 pt-10 border-t border-white/5 flex gap-10 text-[10px] font-black uppercase tracking-[0.2em] relative z-10">
+        <a href="/admin/login" className="text-dark-muted hover:text-brand transition-all hover:scale-105">Admin Login</a>
+        <a href="/operario/login" className="text-dark-muted hover:text-indigo-500 transition-all hover:scale-105">Staff Access</a>
       </div>
     </div>
   );

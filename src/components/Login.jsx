@@ -45,32 +45,32 @@ export default function Login({ role }) {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      <div className="max-w-md w-full bg-white rounded-xl shadow-lg p-8">
+    <div className="min-h-screen bg-dark-bg flex items-center justify-center p-4">
+      <div className="max-w-md w-full bg-dark-card rounded-2xl border border-dark-border shadow-2xl p-8">
         <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold text-gray-900 mb-2">ParkScan</h2>
-          <p className="text-gray-500">
+          <h2 className="text-4xl font-black text-white mb-2 tracking-tighter">ParkScan</h2>
+          <p className="text-dark-muted font-medium">
             Acceso {role === 'admin' ? 'Administrador' : 'Operario'}
           </p>
         </div>
 
         {error && (
-          <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-lg text-sm">
+          <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl text-sm font-medium">
             {error}
           </div>
         )}
 
-        <form onSubmit={handleLogin} className="space-y-6">
+        <form onSubmit={handleLogin} className="space-y-5">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Usuario</label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <User className="h-5 w-5 text-gray-400" />
+            <label className="block text-sm font-bold text-dark-muted mb-2 ml-1">Usuario</label>
+            <div className="relative group">
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none transition-colors group-focus-within:text-brand">
+                <User className="h-5 w-5 text-dark-muted" />
               </div>
               <input
                 type="text"
                 required
-                className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-accent focus:border-accent"
+                className="input-dark block w-full pl-12 pr-4 py-3"
                 placeholder="Ingresa tu usuario"
                 value={usuario}
                 onChange={(e) => setUsuario(e.target.value)}
@@ -79,15 +79,15 @@ export default function Login({ role }) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Contraseña</label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Lock className="h-5 w-5 text-gray-400" />
+            <label className="block text-sm font-bold text-dark-muted mb-2 ml-1">Contraseña</label>
+            <div className="relative group">
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none transition-colors group-focus-within:text-brand">
+                <Lock className="h-5 w-5 text-dark-muted" />
               </div>
               <input
                 type="password"
                 required
-                className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-accent focus:border-accent"
+                className="input-dark block w-full pl-12 pr-4 py-3"
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -98,9 +98,11 @@ export default function Login({ role }) {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-accent text-white py-2 px-4 rounded-lg hover:bg-opacity-90 transition-colors disabled:opacity-50"
+            className="btn-primary w-full mt-4 flex items-center justify-center gap-2"
           >
-            {loading ? 'Ingresando...' : 'Iniciar Sesión'}
+            {loading ? (
+              <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+            ) : 'Iniciar Sesión'}
           </button>
         </form>
       </div>

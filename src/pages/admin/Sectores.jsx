@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
-import { Plus, Trash2, Edit2, Play, Pause } from 'lucide-react';
+import { Plus, Trash2, LayoutGrid, Play, Pause } from 'lucide-react';
 
 export default function AdminSectores() {
   const [sectores, setSectores] = useState([]);
   const [loading, setLoading] = useState(true);
-  
+
   // Estados para nuevo sector
   const [nuevoNombre, setNuevoNombre] = useState('');
   const [nuevaCapacidad, setNuevaCapacidad] = useState('');
@@ -17,7 +17,6 @@ export default function AdminSectores() {
   const fetchSectores = async () => {
     try {
       setLoading(true);
-      // Fetcheamos sectores y sus plazas correspondientes
       const { data, error } = await supabase
         .from('sectores')
         .select(`
@@ -43,16 +42,15 @@ export default function AdminSectores() {
     try {
       const { data: sectorData, error: sectorError } = await supabase
         .from('sectores')
-        .insert([{ 
-          nombre: nuevoNombre, 
-          capacidad: parseInt(nuevaCapacidad) 
+        .insert([{
+          nombre: nuevoNombre,
+          capacidad: parseInt(nuevaCapacidad)
         }])
         .select()
         .single();
 
       if (sectorError) throw sectorError;
 
-      // Generar plazas automáticamente para el sector creado
       const plazasParaInsertar = Array.from({ length: parseInt(nuevaCapacidad) }, (_, i) => ({
         numero: `${sectorData.nombre.charAt(0).toUpperCase()}${i + 1}`,
         id_sector: sectorData.id_sector,
@@ -67,10 +65,10 @@ export default function AdminSectores() {
 
       setNuevoNombre('');
       setNuevaCapacidad('');
-      fetchSectores(); // Recargar datos
+      fetchSectores();
     } catch (error) {
       console.error('Error creando sector:', error.message);
-      alert('Error creando el sector (quizás el nombre ya existe)');
+      alert(`No se pudo crear el sector: ${error.message}`);
     }
   };
 
@@ -90,7 +88,6 @@ export default function AdminSectores() {
   };
 
   const togglePlazaState = async (plaza) => {
-    // Si está ocupada no se puede pausar (solo si está libre)
     if (plaza.estado === 'ocupada') {
       alert('No se puede pausar una plaza que está actualmente ocupada.');
       return;
@@ -111,8 +108,8 @@ export default function AdminSectores() {
   };
 
   const eliminarSector = async (id) => {
-    if(!window.confirm('¿Seguro que deseas eliminar el sector? Se borrarán todas sus plazas también.')) return;
-    
+    if (!window.confirm('¿Seguro que deseas eliminar el sector? Se borrarán todas sus plazas también.')) return;
+
     try {
       const { error } = await supabase
         .from('sectores')
@@ -127,102 +124,119 @@ export default function AdminSectores() {
     }
   };
 
-  if (loading) return <div className="text-gray-500">Cargando sectores...</div>;
+  if (loading) return (
+    <div className="flex flex-col items-center justify-center h-64 gap-4">
+      <div className="w-10 h-10 border-4 border-brand/20 border-t-brand rounded-full animate-spin"></div>
+      <p className="text-dark-muted font-bold text-sm uppercase tracking-widest text-center">Configurando Infraestructura...</p>
+    </div>
+  );
 
   return (
-    <div>
-      <h2 className="text-2xl font-bold text-gray-800 mb-6">Gestión de Sectores y Plazas</h2>
+    <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+      <div className="flex items-center gap-4 mb-10">
+        <div className="p-3 bg-brand/10 border border-brand/20 rounded-2xl">
+          <LayoutGrid className="w-8 h-8 text-brand" />
+        </div>
+        <div>
+          <h2 className="text-3xl font-black text-white tracking-tight leading-none mb-1">Arquitectura de Espacios</h2>
+          <p className="text-dark-muted font-bold text-xs uppercase tracking-widest">Gestión de niveles, sectores y plazas</p>
+        </div>
+      </div>
 
-      {/* Formulario nuevo sector */}
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-8">
-        <h3 className="text-lg font-semibold mb-4">Añadir Nuevo Sector</h3>
-        <form onSubmit={handleCrearSector} className="flex gap-4 items-end">
-          <div className="flex-1">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Nombre (Ej: Piso 1)</label>
+      <div className="dark-card p-10 mb-12 border-brand/10 relative overflow-hidden group">
+        <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/50 mb-6">Desplegar Nuevo Sector</h3>
+        <form onSubmit={handleCrearSector} className="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10">
+          <div>
+            <label className="block text-[10px] font-black text-dark-muted uppercase tracking-widest mb-2 ml-1">Letra del Sector</label>
             <input
               type="text"
               required
+              maxLength={1}
+              placeholder="Ej: A"
               value={nuevoNombre}
-              onChange={(e) => setNuevoNombre(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-accent focus:border-accent"
+              onChange={(e) => setNuevoNombre(e.target.value.toUpperCase())}
+              className="input-dark w-full py-3 text-center uppercase font-black"
             />
           </div>
-          <div className="flex-1">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Capacidad (Nro. de Plazas)</label>
+          <div>
+            <label className="block text-[10px] font-black text-dark-muted uppercase tracking-widest mb-2 ml-1">Capacidad Estimada</label>
             <input
               type="number"
               min="1"
               max="1000"
               required
+              placeholder="000"
               value={nuevaCapacidad}
               onChange={(e) => setNuevaCapacidad(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-accent focus:border-accent"
+              className="input-dark w-full py-3"
             />
           </div>
-          <button
-            type="submit"
-            className="bg-accent text-white px-6 py-2 rounded-lg hover:bg-opacity-90 flex items-center gap-2 h-[42px]"
-          >
-            <Plus className="w-5 h-5" />
-            Crear Sector
-          </button>
+          <div className="flex items-end">
+            <button
+              type="submit"
+              className="btn-primary w-full py-3 flex items-center justify-center gap-2"
+            >
+              <Plus className="w-5 h-5" />
+              <span>Inicializar Sector</span>
+            </button>
+          </div>
         </form>
       </div>
 
-      {/* Listado de sectores */}
-      <div className="space-y-6">
+      <div className="grid gap-10">
         {sectores.map((sector) => (
-          <div key={sector.id_sector} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-            {/* Cabecera Sector */}
-            <div className={`p-4 border-b flex justify-between items-center ${sector.estado === 'mantenimiento' ? 'bg-orange-50' : 'bg-slate-50'}`}>
+          <div key={sector.id_sector} className="dark-card overflow-hidden border-brand/5 group hover:border-brand/20 transition-all duration-500">
+            <div className={`p-8 border-b border-dark-border flex justify-between items-center bg-white/[0.01] group-hover:bg-brand/[0.02] transition-colors`}>
               <div>
-                <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                  {sector.nombre}
+                <div className="flex items-center gap-3 mb-1">
+                  <h3 className="text-2xl font-black text-white tracking-tight">{sector.nombre}</h3>
                   {sector.estado === 'mantenimiento' && (
-                    <span className="text-xs bg-orange-100 text-orange-700 px-2 py-1 rounded-full border border-orange-200">En Pausa</span>
+                    <span className="text-[9px] font-black bg-orange-500/10 text-orange-500 px-3 py-1 rounded-full border border-orange-500/20 uppercase tracking-widest">En Pausa</span>
                   )}
-                </h3>
-                <p className="text-sm text-gray-500">Capacidad Total: {sector.capacidad} plazas</p>
+                  <div className={`w-2 h-2 rounded-full ${sector.estado === 'disponible' ? 'bg-green-500' : 'bg-red-500'} animate-pulse`}></div>
+                </div>
+                <p className="text-[10px] font-black text-dark-muted uppercase tracking-widest">Configuración: {sector.capacidad} Unidades</p>
               </div>
-              <div className="flex gap-2">
+
+              <div className="flex gap-4">
                 <button
                   onClick={() => toggleSectorState(sector)}
                   title={sector.estado === 'disponible' ? 'Pausar Sector Completo' : 'Reactivar Sector'}
-                  className={`p-2 rounded-lg transition-colors ${sector.estado === 'disponible' ? 'text-orange-600 hover:bg-orange-100' : 'text-green-600 hover:bg-green-100'}`}
+                  className={`p-3 rounded-xl transition-all border ${sector.estado === 'disponible' ? 'border-orange-500/20 text-orange-500 hover:bg-orange-500/5' : 'border-green-500/20 text-green-500 hover:bg-green-500/5'}`}
                 >
-                  {sector.estado === 'disponible' ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
+                  {sector.estado === 'disponible' ? <Pause className="w-5 h-5 shadow-[0_0_10px_rgba(249,115,22,0.2)]" /> : <Play className="w-5 h-5 shadow-[0_0_10px_rgba(34,197,94,0.2)]" />}
                 </button>
                 <button
                   onClick={() => eliminarSector(sector.id_sector)}
-                  className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                  title="Eliminar Sector"
+                  className="p-3 text-red-500/50 hover:text-red-500 hover:bg-red-500/5 border border-white/5 rounded-xl transition-all"
+                  title="Dar de Baja Sector"
                 >
                   <Trash2 className="w-5 h-5" />
                 </button>
               </div>
             </div>
 
-            {/* Grid de Plazas */}
-            <div className="p-6">
-              <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 gap-3">
-                {sector.plazas?.sort((a,b) => a.numero.localeCompare(b.numero, undefined, {numeric: true})).map((plaza) => {
-                  let bgColor = 'bg-green-100 text-green-700 border-green-200 hover:bg-green-200'; // libre
-                  if (plaza.estado === 'ocupada') bgColor = 'bg-red-100 text-red-700 border-red-200 cursor-not-allowed';
-                  if (plaza.estado === 'mantenimiento') bgColor = 'bg-slate-200 text-slate-500 border-slate-300 hover:bg-slate-300';
-                  
+            <div className="p-10 bg-dark-bg/30">
+              <div className="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-10 lg:grid-cols-12 gap-4">
+                {sector.plazas?.sort((a, b) => a.numero.localeCompare(b.numero, undefined, { numeric: true })).map((plaza) => {
+                  let style = 'bg-white/5 text-dark-muted/20 border-white/5';
+                  if (plaza.estado === 'libre') style = 'bg-green-500/5 text-green-500/80 border-green-500/10 hover:bg-green-500/10 hover:border-green-500/30 shadow-[0_0_20px_rgba(34,197,94,0.02)]';
+                  if (plaza.estado === 'ocupada') style = 'bg-red-500/10 text-red-500 border-red-500/20 cursor-not-allowed opacity-80';
+                  if (plaza.estado === 'mantenimiento') style = 'bg-dark-card text-dark-muted/30 border-dark-border hover:bg-white/5 hover:text-white';
+
                   return (
                     <button
                       key={plaza.id_plaza}
                       onClick={() => togglePlazaState(plaza)}
-                      title={plaza.estado === 'libre' ? 'Poner en mantenimiento' : plaza.estado === 'mantenimiento' ? 'Habilitar plaza' : 'Plaza ocupada'}
                       disabled={plaza.estado === 'ocupada'}
                       className={`
-                        flex flex-col items-center justify-center p-3 rounded-lg border-2 
-                        transition-all duration-200 font-mono font-bold
-                        ${bgColor}
+                        flex flex-col items-center justify-center p-4 rounded-xl border-2 
+                        transition-all duration-300 font-mono font-black text-sm relative group/btn
+                        ${style}
                       `}
                     >
-                      {plaza.numero}
+                      <span>{plaza.numero}</span>
+                      <div className={`absolute top-1 right-1 w-1 h-1 rounded-full ${plaza.estado === 'libre' ? 'bg-green-500' : plaza.estado === 'ocupada' ? 'bg-red-500' : 'bg-orange-500'}`}></div>
                     </button>
                   );
                 })}
@@ -232,8 +246,12 @@ export default function AdminSectores() {
         ))}
 
         {sectores.length === 0 && (
-          <div className="text-center py-12 text-gray-500 bg-white rounded-xl border border-dashed border-gray-300">
-            No hay sectores creados aún.
+          <div className="text-center py-24 dark-card border-dashed">
+            <div className="bg-white/5 p-6 rounded-full w-max mx-auto mb-6">
+              <Plus className="w-12 h-12 text-dark-muted" />
+            </div>
+            <p className="text-dark-muted font-black uppercase tracking-[0.3em]">No hay infraestructura configurada</p>
+            <p className="text-xs text-dark-muted/50 mt-4 italic">Utilice el panel superior para desplegar su primer sector.</p>
           </div>
         )}
       </div>

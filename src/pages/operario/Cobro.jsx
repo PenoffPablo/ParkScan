@@ -102,87 +102,109 @@ export default function OperarioCobro() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto">
-      <h2 className="text-2xl font-bold text-gray-800 mb-6">Caja y Egreso de Vehículos</h2>
+    <div className="max-w-2xl mx-auto animate-in fade-in slide-in-from-bottom-6 duration-700">
+      <div className="flex items-center gap-4 mb-10">
+        <div className="p-3 bg-brand/10 border border-brand/20 rounded-2xl">
+          <CreditCard className="w-8 h-8 text-brand" />
+        </div>
+        <div>
+          <h2 className="text-3xl font-black text-white tracking-tight leading-none mb-1">Centro de Facturación</h2>
+          <p className="text-dark-muted font-bold text-xs uppercase tracking-widest">Gestión de cobro y egreso</p>
+        </div>
+      </div>
 
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 mb-6">
-        <label className="block text-sm font-bold text-gray-700 mb-2">
-          Escanear o Ingresar Código QR del Ticket
+      <div className="dark-card p-10 mb-8 border-brand/10 relative overflow-hidden group">
+        <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
+           <Search className="w-32 h-32" />
+        </div>
+        
+        <label className="block text-xs font-black text-dark-muted uppercase tracking-[0.2em] mb-4 ml-1">
+          Identificador del Ticket
         </label>
-        <form onSubmit={buscarTicket} className="flex gap-3">
+        <form onSubmit={buscarTicket} className="flex gap-4 relative z-10">
           <input
             type="text"
-            className="flex-1 px-4 py-3 border border-gray-300 rounded-lg text-lg uppercase tracking-wider font-mono focus:ring-accent focus:border-accent"
-            placeholder="PS-1A2B-3C4D5"
+            className="input-dark flex-1 py-4 text-xl font-mono font-black"
+            placeholder="PS-XXXX-XXXX"
             value={codigoQR}
             onChange={(e) => setCodigoQR(e.target.value.toUpperCase())}
           />
           <button
             type="submit"
-            className="bg-accent text-white px-6 py-3 rounded-lg hover:bg-opacity-90 flex items-center gap-2 font-bold"
+            className="btn-primary px-8 flex items-center gap-3"
           >
             <Search className="w-5 h-5" />
-            Buscar
+            <span>Validar</span>
           </button>
         </form>
 
-        {error && <p className="text-red-600 mt-4 text-sm font-medium bg-red-50 p-3 rounded-lg border border-red-100">{error}</p>}
+        {error && (
+          <div className="mt-6 p-4 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl text-sm font-bold animate-in bounce-in">
+            {error}
+          </div>
+        )}
+        
         {resultado && (
-          <div className="mt-4 p-4 bg-green-50 rounded-lg border border-green-200 flex items-start gap-3 text-green-800">
-            <CheckCircle2 className="w-6 h-6 flex-shrink-0 text-green-600" />
-            <p className="font-medium">{resultado}</p>
+          <div className="mt-6 p-6 bg-green-500/10 border border-green-500/20 rounded-2xl flex items-start gap-4 text-green-400 animate-in zoom-in">
+            <CheckCircle2 className="w-6 h-6 flex-shrink-0" />
+            <p className="font-bold leading-relaxed">{resultado}</p>
           </div>
         )}
       </div>
 
       {ticket && (
-        <div className="bg-white rounded-xl shadow-sm border border-indigo-200 overflow-hidden">
-          <div className="bg-indigo-50 p-4 border-b border-indigo-100">
-            <h3 className="text-indigo-900 font-bold text-lg">Detalle del Servicio</h3>
+        <div className="dark-card border-brand/30 overflow-hidden animate-in fade-in slide-in-from-right-8 duration-500">
+          <div className="bg-brand/10 p-6 border-b border-brand/20 flex justify-between items-center">
+            <h3 className="text-brand font-black text-xs uppercase tracking-widest">Liquidación de Servicio</h3>
+            <span className="text-[10px] font-black p-1 px-3 bg-brand/20 rounded-full">ESTADO: PENDIENTE</span>
           </div>
           
-          <div className="p-6">
-            <div className="grid grid-cols-2 gap-4 mb-6">
-              <div>
-                <p className="text-sm text-gray-500">Sector</p>
-                <p className="font-bold text-gray-900">{ticket.plazas.sectores.nombre}</p>
+          <div className="p-10">
+            <div className="grid grid-cols-2 gap-8 mb-10">
+              <div className="bg-white/5 p-4 rounded-2xl border border-white/5">
+                <p className="text-[10px] text-dark-muted font-black uppercase tracking-widest mb-1">Ubicación</p>
+                <p className="font-bold text-white">{ticket.plazas.sectores.nombre} - <span className="text-brand">{ticket.plazas.numero}</span></p>
               </div>
-              <div>
-                <p className="text-sm text-gray-500">Plaza</p>
-                <p className="font-bold text-gray-900">{ticket.plazas.numero}</p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-500">Ingreso</p>
-                <p className="font-medium text-gray-900">
-                  {new Date(ticket.hora_entrada).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+              <div className="bg-white/5 p-4 rounded-2xl border border-white/5">
+                <p className="text-[10px] text-dark-muted font-black uppercase tracking-widest mb-1">Hora Ingreso</p>
+                <p className="font-bold text-white uppercase italic">
+                  {new Date(ticket.hora_entrada).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'})}
                 </p>
               </div>
-              <div>
-                <p className="text-sm text-gray-500">Tiempo Estadía</p>
-                <p className="font-bold text-accent">{ticket.horasCalculadas} Horas</p>
+              <div className="bg-white/5 p-4 rounded-2xl border border-white/5">
+                <p className="text-[10px] text-dark-muted font-black uppercase tracking-widest mb-1">Duración</p>
+                <p className="text-xl font-black text-white">{ticket.horasCalculadas} <span className="text-xs text-dark-muted">HORAS</span></p>
+              </div>
+              <div className="bg-brand/5 p-4 rounded-2xl border border-brand/10">
+                <p className="text-[10px] text-brand font-black uppercase tracking-widest mb-1">Base Tarifaria</p>
+                <p className="font-bold text-white italic">${COSTO_POR_HORA} <span className="text-[10px] text-dark-muted lowercase italic">x hora</span></p>
               </div>
             </div>
 
-            <div className="border-t border-gray-100 pt-6 mb-8 flex justify-between items-center">
-              <span className="text-gray-500 font-medium text-lg">Total a Pagar:</span>
-              <span className="text-4xl font-black text-gray-900">${ticket.montoCalulado}</span>
+            <div className="border-y border-white/5 py-8 mb-10 flex justify-between items-center">
+              <span className="text-white/50 font-black text-sm uppercase tracking-[0.2em]">Total Adeudado</span>
+              <div className="text-right">
+                <span className="text-6xl font-black text-white leading-none">${ticket.montoCalulado}</span>
+                <p className="text-[10px] font-bold text-brand uppercase tracking-widest mt-1">Saldado en Pesos</p>
+              </div>
             </div>
 
             <div className="flex gap-4">
               <button
                 disabled={procesando}
                 onClick={() => registrarPago('efectivo')}
-                className="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
+                className="btn-secondary flex-1 py-5 flex items-center justify-center gap-2 group"
               >
-                Cobrar en Efectivo
+                <div className="w-2 h-2 rounded-full bg-dark-muted group-hover:bg-brand transition-colors"></div>
+                <span>Efectivo</span>
               </button>
               <button
                 disabled={procesando}
                 onClick={() => registrarPago('qr')}
-                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
+                className="btn-primary flex-1 py-5 flex items-center justify-center gap-3"
               >
-                <CreditCard className="w-5 h-5" />
-                Pago QR / Digital
+                <CreditCard className="w-5 h-5 shadow-2xl" />
+                <span>Pago Digital</span>
               </button>
             </div>
           </div>

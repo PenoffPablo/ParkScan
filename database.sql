@@ -30,6 +30,7 @@ CREATE TABLE turnos (
 CREATE TABLE sectores (
   id_sector UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   nombre VARCHAR(100) NOT NULL UNIQUE, -- Ej: 'Patio A', 'Piso 1'
+  capacidad INTEGER DEFAULT 0,
   estado VARCHAR(20) DEFAULT 'disponible', -- Ej: 'disponible', 'mantenimiento'
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );

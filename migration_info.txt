@@ -1,0 +1,20 @@
+import { createClient } from '@supabase/supabase-js';
+
+const supabaseUrl = 'https://aszxuwktoeivxxmxunxf.supabase.co';
+const supabaseKey = 'sb_publishable_aqp_tJNZd42jOQj4OZQSrw_YTTisf1j';
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+async function migrate() {
+    console.log('--- Iniciando Migración ---');
+    
+    // Como no podemos ejecutar un query directo de ALTER TABLE por la API de anon
+    // tenemos que intentar manejarlo o avisar al usuario.
+    // Pero espera, ¡puedo usar RPC si existe, o avisar que se debe correr el SQL!
+    
+    console.log('IMPORTANTE: No puedo correr ALTER TABLE directamente con la ANON KEY.');
+    console.log('El usuario debe correr este SQL en el Dashboard de Supabase:');
+    console.log('ALTER TABLE sectores ADD COLUMN capacidad INTEGER DEFAULT 0;');
+    console.log('---------------------------');
+}
+
+migrate();
