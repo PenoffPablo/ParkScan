@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
-import { Car, Printer, X } from 'lucide-react';
+import { Car, X, QrCode, CreditCard, UserCircle } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { generarTicketPublico } from '../../utils/ticketService';
 
@@ -10,6 +10,9 @@ export default function ClienteHome() {
   const [loading, setLoading] = useState(true);
   const [generando, setGenerando] = useState(false);
   const [ticketAsignado, setTicketAsignado] = useState(null);
+
+  // Nuevo state para el modal de login de staff
+  const [showLoginOptions, setShowLoginOptions] = useState(false);
 
   useEffect(() => {
     fetchDisponibilidad();
@@ -70,20 +73,20 @@ export default function ClienteHome() {
   const sinLugar = plazasDisponibles === 0;
 
   return (
-    <div className="min-h-screen bg-dark-bg flex flex-col items-center justify-center p-6 text-center relative overflow-hidden">
+    <div className="min-h-screen bg-dark-bg flex flex-col items-center py-10 px-6 text-center relative overflow-x-hidden">
       {/* Decorative Blur Elements */}
       <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-brand/10 blur-[120px] rounded-full"></div>
-      <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-accent/10 blur-[120px] rounded-full"></div>
+      <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-blue-500/10 blur-[120px] rounded-full"></div>
 
-      <div className="mb-12 relative">
-        <div className="p-5 bg-white/5 rounded-3xl border border-white/10 backdrop-blur-xl mb-6 mx-auto w-max shadow-2xl">
-          <Car className="w-16 h-16 text-brand" />
+      <div className="mb-8 relative mt-auto">
+        <div className="p-4 bg-white/5 rounded-3xl border border-white/10 backdrop-blur-xl mb-4 mx-auto w-max shadow-2xl">
+          <Car className="w-12 h-12 text-brand" />
         </div>
-        <h1 className="text-6xl font-black text-white mb-2 tracking-tighter leading-none">ParkScan</h1>
+        <h1 className="text-5xl md:text-6xl font-black text-white mb-2 tracking-tighter leading-none">ParkScan</h1>
       </div>
 
       <div className={`
-        glass-card p-12 mb-12 max-w-sm w-full transition-all duration-700 relative group
+        glass-card p-6 md:p-8 mb-10 w-full max-w-md transition-all duration-700 relative group
         ${sinLugar ? 'border-red-500/30' : 'border-brand/30'}
       `}>
         <div className={`
@@ -91,12 +94,12 @@ export default function ClienteHome() {
           ${sinLugar ? 'bg-red-500' : 'bg-brand'}
         `}></div>
 
-        <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-dark-muted mb-4">
+        <h2 className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-dark-muted mb-2">
           Plazas Disponibles
         </h2>
 
         <div className={`
-          text-9xl font-black mb-4 tracking-tighter transition-colors duration-700
+          text-7xl md:text-8xl font-black mb-2 tracking-tighter transition-colors duration-700
           ${sinLugar ? 'text-red-500' : 'text-white'}
         `}>
           {plazasDisponibles}
@@ -108,21 +111,63 @@ export default function ClienteHome() {
         </div>
       </div>
 
-      <button
-        disabled={sinLugar || generando}
-        onClick={handleImprimirTicket}
-        className={`
-          flex items-center gap-4 px-10 py-6 rounded-2xl text-xl font-bold text-white shadow-2xl transition-all duration-500 relative overflow-hidden group
-          ${(sinLugar || generando)
-            ? 'bg-dark-card border border-dark-border opacity-50 cursor-not-allowed'
-            : 'bg-brand hover:scale-105 active:scale-95 shadow-brand/40'
-          }
-        `}
-      >
-        <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-        <Printer className="w-7 h-7" />
-        <span>{generando ? 'Procesando...' : sinLugar ? 'Sin disponibilidad' : 'Imprimir Ticket'}</span>
-      </button>
+      {/* 3 BOTONES PRINCIPALES */}
+      <div className="flex flex-col md:flex-row justify-center gap-5 w-full max-w-5xl relative z-10 mb-auto">
+
+        {/* BOTÓN 1: Generar QR / Ingreso */}
+        <button
+          disabled={sinLugar || generando}
+          onClick={handleImprimirTicket}
+          className={`
+            flex flex-col items-center justify-center p-8 rounded-3xl border text-center transition-all duration-500 group relative w-full md:w-1/3 min-h-[220px]
+            ${(sinLugar || generando)
+              ? 'bg-dark-card border-dark-border opacity-50 cursor-not-allowed'
+              : 'bg-brand/10 border-brand/30 hover:bg-brand/20 hover:border-brand shadow-[0_0_30px_rgba(var(--color-brand),0.1)] hover:shadow-[0_0_50px_rgba(var(--color-brand),0.3)] hover:-translate-y-2'
+            }
+          `}
+        >
+          <div className="p-5 bg-black/20 rounded-2xl group-hover:scale-110 transition-transform mb-4">
+            <QrCode className={`w-10 h-10 ${sinLugar || generando ? 'text-gray-500' : 'text-brand'}`} />
+          </div>
+          <div>
+            <h3 className={`text-2xl font-black mb-2 ${sinLugar || generando ? 'text-gray-400' : 'text-white'}`}>
+              {generando ? 'Procesando...' : sinLugar ? 'Sin disponibilidad' : 'Ingresar Vehículo'}
+            </h3>
+            <p className={`text-sm font-medium ${sinLugar || generando ? 'text-gray-500' : 'text-brand/80'}`}>
+              Generar ticket con código QR
+            </p>
+          </div>
+        </button>
+
+        {/* BOTÓN 2: Kiosco de Pago */}
+        <a
+          href="/pago"
+          className="flex flex-col items-center justify-center p-8 rounded-3xl border border-blue-500/30 bg-blue-500/10 hover:bg-blue-500/20 hover:border-blue-500 text-center transition-all duration-500 group shadow-[0_0_30px_rgba(59,130,246,0.1)] hover:shadow-[0_0_50px_rgba(59,130,246,0.3)] hover:-translate-y-2 relative w-full md:w-1/3 min-h-[220px]"
+        >
+          <div className="p-5 bg-black/20 rounded-2xl group-hover:scale-110 transition-transform mb-4">
+            <CreditCard className="w-10 h-10 text-blue-500" />
+          </div>
+          <div>
+            <h3 className="text-2xl font-black text-white mb-2">Kiosco de Pago</h3>
+            <p className="text-sm font-medium text-blue-400">Abonar estadía antes de salir</p>
+          </div>
+        </a>
+
+        {/* BOTÓN 3: Login de Personal */}
+        <button
+          onClick={() => setShowLoginOptions(true)}
+          className="flex flex-col items-center justify-center p-8 rounded-3xl border border-purple-500/30 bg-purple-500/10 hover:bg-purple-500/20 hover:border-purple-500 text-center transition-all duration-500 group shadow-[0_0_30px_rgba(168,85,247,0.1)] hover:shadow-[0_0_50px_rgba(168,85,247,0.3)] hover:-translate-y-2 relative w-full md:w-1/3 min-h-[220px]"
+        >
+          <div className="p-5 bg-black/20 rounded-2xl group-hover:scale-110 transition-transform mb-4">
+            <UserCircle className="w-10 h-10 text-purple-500" />
+          </div>
+          <div>
+            <h3 className="text-2xl font-black text-white mb-2">Acceso Staff</h3>
+            <p className="text-sm font-medium text-purple-400">Login Administrador / Operario</p>
+          </div>
+        </button>
+
+      </div>
 
       {/* MODAL DEL TICKET GENERADO */}
       {ticketAsignado && (
@@ -169,12 +214,36 @@ export default function ClienteHome() {
         </div>
       )}
 
-      {/* FOOTER DE ACCESO RÁPIDO */}
-      <div className="mt-20 pt-10 border-t border-white/5 flex gap-10 text-[10px] font-black uppercase tracking-[0.2em] relative z-10">
-        <a href="/pago" className="text-brand hover:scale-105 transition-all">Pagar Estadía</a>
-        <a href="/admin/login" className="text-dark-muted hover:text-brand transition-all hover:scale-105">Admin Login</a>
-        <a href="/operario/login" className="text-dark-muted hover:text-indigo-500 transition-all hover:scale-105">Staff Access</a>
-      </div>
+      {/* MODAL DE LOGIN OPTIONS */}
+      {showLoginOptions && (
+        <div className="fixed inset-0 bg-dark-bg/80 flex justify-center items-center z-50 p-4 backdrop-blur-xl transition-all animate-in fade-in zoom-in duration-300">
+          <div className="bg-dark-card border border-dark-border rounded-[2.5rem] p-10 max-w-sm w-full shadow-[0_0_50px_rgba(168,85,247,0.2)] relative text-center">
+            <button
+              onClick={() => setShowLoginOptions(false)}
+              className="absolute top-6 right-6 text-dark-muted hover:text-white bg-white/5 rounded-full p-2 transition-colors border border-white/5"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            <div className="mb-6 flex justify-center">
+              <div className="p-4 bg-purple-500/20 rounded-2xl">
+                <UserCircle className="w-10 h-10 text-purple-500" />
+              </div>
+            </div>
+            <h3 className="text-2xl font-black text-white mb-2 tracking-tight">Acceso de Personal</h3>
+            <p className="text-dark-muted mb-8 text-sm">Seleccione su perfil de ingreso</p>
+
+            <div className="flex flex-col gap-4">
+              <a href="/admin/login" className="p-4 rounded-xl border border-white/10 bg-white/5 hover:bg-purple-500/20 hover:border-purple-500/50 text-white font-bold transition-all text-lg flex items-center justify-center gap-3">
+                Administrador
+              </a>
+              <a href="/operario/login" className="p-4 rounded-xl border border-white/10 bg-white/5 hover:bg-blue-500/20 hover:border-blue-500/50 text-white font-bold transition-all text-lg flex items-center justify-center gap-3">
+                Operario
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
