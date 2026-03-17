@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import AdminLogin from './pages/admin/Login';
 import AdminDashboard from './pages/admin/Dashboard';
 import AdminSectores from './pages/admin/Sectores';
+import AdminOperarios from './pages/admin/Operarios';
 import AdminLayout from './components/AdminLayout';
 import OperarioLogin from './pages/operario/Login';
 import OperarioDashboard from './pages/operario/Dashboard';
@@ -42,6 +43,7 @@ function App() {
         >
           <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="sectores" element={<AdminSectores />} />
+          <Route path="operarios" element={<AdminOperarios />} />
         </Route>
 
         {/* Rutas Operario */}

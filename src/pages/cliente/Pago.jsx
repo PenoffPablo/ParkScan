@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
-import { CreditCard, QrCode, ArrowRight, CheckCircle2, Clock, Car, ExternalLink } from 'lucide-react';
+import { CreditCard, QrCode, ArrowRight, ArrowLeft, CheckCircle2, Clock, Car, ExternalLink } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 
 // Inicialización de Mercado Pago removida: se maneja vía Supabase Edge Functions
@@ -154,7 +154,16 @@ export default function ClientePago() {
       {/* Background Glow */}
       <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-brand/5 blur-[150px] rounded-full pointer-events-none"></div>
 
-      <div className="w-full max-w-4xl grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      {/* Botón Volver Embebido Superpuesto */}
+      <button 
+        onClick={() => window.location.href = '/'}
+        className="absolute top-6 left-6 z-50 flex items-center gap-2 px-5 py-3 rounded-2xl bg-white/5 border border-white/10 text-white font-bold hover:bg-white/10 transition-colors shadow-lg group backdrop-blur-md"
+      >
+        <ArrowLeft className="w-5 h-5 text-dark-muted group-hover:text-white transition-colors" />
+        <span className="hidden sm:inline">Volver</span>
+      </button>
+
+      <div className="w-full max-w-4xl grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mt-14 lg:mt-0">
         
         {/* Left Side: Info & Input */}
         <div className="animate-in slide-in-from-left duration-700">
@@ -298,10 +307,6 @@ export default function ClientePago() {
           </div>
         </div>
 
-      </div>
-
-      <div className="mt-20 pt-10 border-t border-white/5 flex gap-10 text-[10px] font-black uppercase tracking-[0.2em] opacity-30">
-        <a href="/" className="hover:text-brand transition-all">← Inicio Cliente</a>
       </div>
     </div>
   );
