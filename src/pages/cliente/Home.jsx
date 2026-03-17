@@ -171,6 +171,7 @@ export default function ClienteHome() {
 
       {/* FOOTER DE ACCESO RÁPIDO */}
       <div className="mt-20 pt-10 border-t border-white/5 flex gap-10 text-[10px] font-black uppercase tracking-[0.2em] relative z-10">
+        <a href="/pago" className="text-brand hover:scale-105 transition-all">Pagar Estadía</a>
         <a href="/admin/login" className="text-dark-muted hover:text-brand transition-all hover:scale-105">Admin Login</a>
         <a href="/operario/login" className="text-dark-muted hover:text-indigo-500 transition-all hover:scale-105">Staff Access</a>
       </div>
