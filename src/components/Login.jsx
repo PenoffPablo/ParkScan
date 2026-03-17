@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
-import { Lock, User } from 'lucide-react';
+import { Lock, User, ArrowLeft } from 'lucide-react';
 
 export default function Login({ role }) {
   const [usuario, setUsuario] = useState('');
@@ -45,8 +45,18 @@ export default function Login({ role }) {
   };
 
   return (
-    <div className="min-h-screen bg-dark-bg flex items-center justify-center p-4">
-      <div className="max-w-md w-full bg-dark-card rounded-2xl border border-dark-border shadow-2xl p-8">
+    <div className="min-h-screen bg-dark-bg flex items-center justify-center p-4 relative">
+      
+      {/* Botón Volver Embebido Superpuesto */}
+      <button 
+        onClick={() => navigate('/')}
+        className="absolute top-6 left-6 z-50 flex items-center gap-2 px-5 py-3 rounded-2xl bg-white/5 border border-white/10 text-white font-bold hover:bg-white/10 transition-colors shadow-lg group backdrop-blur-md"
+      >
+        <ArrowLeft className="w-5 h-5 text-dark-muted group-hover:text-white transition-colors" />
+        <span className="hidden sm:inline">Volver</span>
+      </button>
+
+      <div className="max-w-md w-full bg-dark-card rounded-2xl border border-dark-border shadow-2xl p-8 z-10">
         <div className="text-center mb-8">
           <h2 className="text-4xl font-black text-white mb-2 tracking-tighter">ParkScan</h2>
           <p className="text-dark-muted font-medium">

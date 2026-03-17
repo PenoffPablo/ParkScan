@@ -33,6 +33,13 @@ export default function AdminLayout() {
             <LayoutGrid className="w-5 h-5 text-dark-muted group-hover:text-accent transition-colors" />
             <span className="font-semibold">Sectores y Plazas</span>
           </Link>
+          <Link 
+            to="/admin/operarios" 
+            className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/5 transition-all group"
+          >
+            <Home className="w-5 h-5 text-dark-muted group-hover:text-brand transition-colors" />
+            <span className="font-semibold">Operarios y Turnos</span>
+          </Link>
         </nav>
 
         <div className="p-6 mt-auto border-t border-dark-border">
