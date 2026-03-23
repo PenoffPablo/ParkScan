@@ -10,6 +10,7 @@ import OperarioCobro from './pages/operario/Cobro';
 import OperarioLayout from './components/OperarioLayout';
 import ClienteHome from './pages/cliente/Home';
 import ClientePago from './pages/cliente/Pago';
+import ClienteSalida from './pages/cliente/Salida';
 import './App.css';
 
 // Componentes para proteger rutas
@@ -30,6 +31,7 @@ function App() {
         {/* Rutas Públicas (Cliente) */}
         <Route path="/" element={<ClienteHome />} />
         <Route path="/pago" element={<ClientePago />} />
+        <Route path="/salida" element={<ClienteSalida />} />
 
         {/* Rutas Administrador */}
         <Route path="/admin/login" element={<AdminLogin />} />

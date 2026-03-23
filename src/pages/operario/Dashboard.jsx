@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
-import { Monitor } from 'lucide-react';
+import { Monitor, Pause, Play } from 'lucide-react';
 
 export default function OperarioDashboard() {
   const [sectores, setSectores] = useState([]);
@@ -31,7 +31,6 @@ export default function OperarioDashboard() {
           *,
           plazas (*)
         `)
-        .eq('estado', 'disponible')
         .order('created_at', { ascending: true });
 
       if (error) throw error;
@@ -40,6 +39,44 @@ export default function OperarioDashboard() {
       console.error('Error fetching disponibilidad:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const toggleSectorState = async (sector) => {
+    if (!window.confirm(`¿Deseas cambiar el estado del sector ${sector.nombre}?`)) return;
+    try {
+      const nuevoEstado = sector.estado === 'disponible' ? 'mantenimiento' : 'disponible';
+      const { error } = await supabase
+        .from('sectores')
+        .update({ estado: nuevoEstado })
+        .eq('id_sector', sector.id_sector);
+
+      if (error) throw error;
+      fetchDisponibilidad();
+    } catch (error) {
+      console.error('Error al cambiar el estado del sector:', error);
+      alert('Error al cambiar el estado del sector.');
+    }
+  };
+
+  const togglePlazaState = async (plaza) => {
+    if (plaza.estado === 'ocupada') {
+      alert('La plaza actualmente está ocupada, no se puede cambiar a mantenimiento.');
+      return;
+    }
+    if (!window.confirm(`¿Deseas ${plaza.estado === 'libre' ? 'deshabilitar' : 'habilitar'} la plaza ${plaza.numero}?`)) return;
+    try {
+      const nuevoEstado = plaza.estado === 'libre' ? 'mantenimiento' : 'libre';
+      const { error } = await supabase
+        .from('plazas')
+        .update({ estado: nuevoEstado })
+        .eq('id_plaza', plaza.id_plaza);
+
+      if (error) throw error;
+      fetchDisponibilidad();
+    } catch (error) {
+      console.error('Error al cambiar el estado de la plaza:', error);
+      alert('Error al cambiar el estado de la plaza.');
     }
   };
 
@@ -70,9 +107,23 @@ export default function OperarioDashboard() {
           return (
             <div key={sector.id_sector} className="dark-card overflow-hidden group hover:border-brand/30">
               <div className="p-6 border-b border-dark-border bg-white/[0.02] flex justify-between items-center group-hover:bg-brand/5 transition-colors duration-500">
-                <div>
-                  <h3 className="text-xl font-black text-white mb-1">{sector.nombre}</h3>
-                  <p className="text-[10px] font-black text-dark-muted uppercase tracking-widest">Capacidad Instalada</p>
+                <div className="flex items-center gap-4">
+                  <div>
+                    <h3 className="text-xl font-black text-white mb-1 flex items-center gap-2">
+                      {sector.nombre}
+                      {sector.estado === 'mantenimiento' && (
+                        <span className="text-[9px] font-black bg-orange-500/10 text-orange-500 px-2 py-0.5 rounded-full border border-orange-500/20 uppercase tracking-widest">En Mantenimiento</span>
+                      )}
+                    </h3>
+                    <p className="text-[10px] font-black text-dark-muted uppercase tracking-widest">Capacidad Instalada</p>
+                  </div>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); toggleSectorState(sector); }}
+                    className={`p-2 rounded-lg border ${sector.estado === 'disponible' ? 'border-orange-500/20 text-orange-500 hover:bg-orange-500/10' : 'border-green-500/20 text-green-500 hover:bg-green-500/10'}`}
+                    title={sector.estado === 'disponible' ? 'Deshabilitar Sector' : 'Habilitar Sector'}
+                  >
+                    {sector.estado === 'disponible' ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+                  </button>
                 </div>
                 <div className="text-right">
                   <div className={`text-2xl font-black ${plazasLibres > 0 ? 'text-green-500' : 'text-red-500'}`}>
@@ -91,17 +142,18 @@ export default function OperarioDashboard() {
                     if (plaza.estado === 'mantenimiento') style = 'bg-dark-bg text-dark-muted/30 border-dark-border opacity-30';
                     
                     return (
-                      <div
+                      <button
                         key={plaza.id_plaza}
-                        title={`Plaza ${plaza.estado}`}
+                        onClick={() => togglePlazaState(plaza)}
+                        title={`Plaza ${plaza.estado}. Click para ${plaza.estado === 'libre' ? 'deshabilitar' : 'habilitar'}`}
                         className={`
                           flex flex-col items-center justify-center p-3 rounded-xl border-2 
-                          transition-all duration-300 font-mono font-black text-sm
+                          transition-all duration-300 font-mono font-black text-sm hover:scale-105 active:scale-95
                           ${style}
                         `}
                       >
                         {plaza.numero}
-                      </div>
+                      </button>
                     );
                   })}
                 </div>

@@ -56,7 +56,7 @@ export default function OperarioLayout() {
             className="flex items-center w-full gap-3 px-4 py-3 rounded-xl hover:bg-white/5 transition-all group text-left"
           >
             <CreditCard className="w-5 h-5 text-dark-muted group-hover:text-brand transition-colors" />
-            <span className="font-semibold">Cobro / Salida</span>
+            <span className="font-semibold">Centro de Cobros</span>
           </Link>
         </nav>
 

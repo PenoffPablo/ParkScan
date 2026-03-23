@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Plus, Pencil, Trash2, CalendarClock, User, Check, X, Watch, Clock } from 'lucide-react';
+import DatePickerRange from '@/components/ui/DatePickerRange';
 
 export default function AdminOperarios() {
   const [operarios, setOperarios] = useState([]);
@@ -24,7 +25,8 @@ export default function AdminOperarios() {
   const [turnosAsignados, setTurnosAsignados] = useState([]);
   const [loadingTurnos, setLoadingTurnos] = useState(false);
   const [nuevoTurno, setNuevoTurno] = useState({
-    fecha: '',
+    fechaInicio: '',
+    fechaFin: '',
     id_turno: ''
   });
 
@@ -124,7 +126,7 @@ export default function AdminOperarios() {
   const handleOpenTurnos = async (operario) => {
     setOperarioSeleccionado(operario);
     setIsModalTurnosOpen(true);
-    setNuevoTurno({ fecha: '', id_turno: '' });
+    setNuevoTurno({ fechaInicio: '', fechaFin: '', id_turno: '' });
     fetchTurnosData(operario.id_operario);
   };
 
@@ -164,24 +166,54 @@ export default function AdminOperarios() {
     }
   };
 
+  const handleRangoChange = (range) => {
+    if (!range?.from) {
+       setNuevoTurno(prev => ({ ...prev, fechaInicio: '', fechaFin: '' }));
+       return;
+    }
+    const pad = n => n.toString().padStart(2, '0');
+    const toYMD = date => date ? `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}` : '';
+    
+    setNuevoTurno(prev => ({
+       ...prev,
+       fechaInicio: toYMD(range.from),
+       fechaFin: toYMD(range.to || range.from) // Si no hay TO, usar el mismo día
+    }));
+  };
+
   const handleAddTurno = async (e) => {
     e.preventDefault();
     if(!nuevoTurno.id_turno) return alert("Selecciona un turno");
+    if(!nuevoTurno.fechaInicio || !nuevoTurno.fechaFin) return alert("Selecciona un rango de fechas");
+
     try {
+      const inicio = new Date(nuevoTurno.fechaInicio + 'T00:00:00');
+      const fin = new Date(nuevoTurno.fechaFin + 'T00:00:00');
+      
+      if (fin < inicio) return alert("La fecha final no puede ser anterior a la inicial.");
+
+      const inserciones = [];
+      let actual = new Date(inicio);
+      
+      while (actual <= fin) {
+         inserciones.push({
+           id_operario: operarioSeleccionado.id_operario,
+           id_turno: nuevoTurno.id_turno,
+           fecha: actual.toISOString().split('T')[0],
+           estado: 'programado'
+         });
+         actual.setDate(actual.getDate() + 1); // Sumar 1 día
+      }
+
       const { error } = await supabase
         .from('operario_turnos')
-        .insert([{
-          id_operario: operarioSeleccionado.id_operario,
-          id_turno: nuevoTurno.id_turno,
-          fecha: nuevoTurno.fecha,
-          estado: 'programado'
-        }]);
+        .insert(inserciones);
 
       if (error) throw error;
-      setNuevoTurno({ fecha: '', id_turno: turnosMaestros[0]?.id_turno || '' });
+      setNuevoTurno({ fechaInicio: '', fechaFin: '', id_turno: turnosMaestros[0]?.id_turno || '' });
       fetchTurnosData(operarioSeleccionado.id_operario);
     } catch (error) {
-      alert('Error asignando turno. Verifica haber ejecutado el SQL: ' + error.message);
+      alert('Error asignando turnos: ' + error.message);
     }
   };
 
@@ -344,17 +376,23 @@ export default function AdminOperarios() {
                </button>
             </div>
 
-            {/* Formulario Asignar Turno */}
+            {/* Formulario Asignar Turno Múltiple */}
             <div className="bg-blue-500/5 border border-blue-500/20 rounded-2xl p-5 mb-6">
-               <h4 className="text-sm font-bold text-blue-400 uppercase tracking-wider mb-4">Asignar Nuevo Turno</h4>
-               <form onSubmit={handleAddTurno} className="flex flex-wrap md:flex-nowrap gap-4 items-end">
-                  <div className="flex-1 min-w-[140px]">
-                    <label className="block text-xs font-bold text-dark-muted mb-1 ml-1 uppercase tracking-wider">Fecha</label>
-                    <input type="date" required value={nuevoTurno.fecha} onChange={e => setNuevoTurno({...nuevoTurno, fecha: e.target.value})} className="input-dark w-full px-3 py-2 text-sm" />
+               <h4 className="text-sm font-bold text-blue-400 uppercase tracking-wider mb-4">Programar Cuadrante</h4>
+               <form onSubmit={handleAddTurno} className="flex flex-col sm:flex-row gap-4 items-end">
+                  <div className="flex-[2] min-w-[250px] w-full">
+                    <label className="block text-[10px] font-bold text-dark-muted mb-2 ml-1 uppercase tracking-wider">Fechas de la Asignación</label>
+                    <DatePickerRange 
+                       value={{ 
+                          from: nuevoTurno.fechaInicio ? new Date(nuevoTurno.fechaInicio+'T00:00:00') : undefined, 
+                          to: nuevoTurno.fechaFin ? new Date(nuevoTurno.fechaFin+'T00:00:00') : undefined 
+                       }} 
+                       onChange={handleRangoChange} 
+                    />
                   </div>
-                  <div className="flex-1 min-w-[150px]">
-                    <label className="block text-xs font-bold text-dark-muted mb-1 ml-1 uppercase tracking-wider">Turno Laboral</label>
-                    <select required value={nuevoTurno.id_turno} onChange={e => setNuevoTurno({...nuevoTurno, id_turno: e.target.value})} className="input-dark w-full px-3 py-2 text-sm">
+                  <div className="flex-1 min-w-[150px] w-full">
+                    <label className="block text-[10px] font-bold text-dark-muted mb-2 ml-1 uppercase tracking-wider">Horario Laboral</label>
+                    <select required value={nuevoTurno.id_turno} onChange={e => setNuevoTurno({...nuevoTurno, id_turno: e.target.value})} className="input-dark w-full px-4 py-3 min-h-[42px] text-sm appearance-none cursor-pointer">
                       {turnosMaestros.map(tm => (
                         <option key={tm.id_turno} value={tm.id_turno}>
                           {tm.nombre_turno} ({tm.hora_inicio.slice(0,5)} a {tm.hora_fin.slice(0,5)})
@@ -362,8 +400,8 @@ export default function AdminOperarios() {
                       ))}
                     </select>
                   </div>
-                  <button type="submit" className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2.5 px-6 rounded-xl transition-colors whitespace-nowrap h-[42px]">
-                    Asignar
+                  <button type="submit" className="bg-brand hover:bg-brand/80 text-white font-black py-3 px-8 rounded-lg shadow-lg shadow-brand/20 transition-all active:scale-95 whitespace-nowrap min-h-[42px]">
+                    Agendar
                   </button>
                </form>
             </div>

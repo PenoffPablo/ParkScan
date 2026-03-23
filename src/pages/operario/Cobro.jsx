@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Search, CreditCard, CheckCircle2 } from 'lucide-react';
 
@@ -12,10 +12,35 @@ export default function OperarioCobro() {
   // Costo por hora harcodeado para este MVP (pueden ser 1000 ARS, por ejemplo)
   const COSTO_POR_HORA = 1000;
 
+  // Sincronización en tiempo real para evitar cobrar doble si el cliente lo paga desde su portal
+  useEffect(() => {
+    if (!ticket) return;
+
+    const ticketSubscription = supabase
+      .channel(`ticket-status-cobro-${ticket.id_ticket}`)
+      .on('postgres_changes', {
+        event: 'UPDATE',
+        schema: 'public',
+        table: 'tickets',
+        filter: `id_ticket=eq.${ticket.id_ticket}`
+      }, payload => {
+        if (payload.new.estado === 'pagado') {
+          setResultado(`Atención: Este ticket acaba de ser abonado exitosamente a través de otra plataforma (Ej: Portal Cliente). La plaza ha sido liberada.`);
+          setTicket(null);
+          setCodigoQR('');
+        }
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(ticketSubscription);
+    };
+  }, [ticket]);
+
   const buscarTicket = async (e) => {
     e.preventDefault();
     if (!codigoQR) return;
-    
+
     setError('');
     setTicket(null);
     setResultado(null);
@@ -36,9 +61,9 @@ export default function OperarioCobro() {
       // Calcular tiempo y costo (simulado hasta el momento actual)
       const entrada = new Date(data.hora_entrada);
       const salidaValidacion = new Date();
-      
+
       const horasMilisegundos = salidaValidacion - entrada;
-      const horasEstacionado = Math.max(1, Math.ceil(horasMilisegundos / (1000 * 60 * 60))); // Mínimo 1 hora cobrada
+      const horasEstacionado = Math.max(1, Math.ceil(horasMilisegundos / (1 * 60 * 60))); // Mínimo 1 hora cobrada
       const montoTotal = horasEstacionado * COSTO_POR_HORA;
 
       setTicket({
@@ -57,16 +82,28 @@ export default function OperarioCobro() {
     setProcesando(true);
     try {
       const sesionOperario = JSON.parse(localStorage.getItem('parkscan_operario'));
-      
+
+      // Control de concurrencia: revisar instantes previos al cobro si ya fue pagado
+      const { data: checkTicket, error: errCheck } = await supabase
+        .from('tickets')
+        .select('estado')
+        .eq('id_ticket', ticket.id_ticket)
+        .single();
+
+      if (errCheck) throw errCheck;
+      if (checkTicket.estado === 'pagado') {
+        throw new Error('Este ticket acaba de ser abonado por otra vía. Recargue la información.');
+      }
+
       // 1. Marcar ticket como pagado con hora de salida
       const { error: errTicket } = await supabase
         .from('tickets')
-        .update({ 
-          estado: 'pagado', 
-          hora_salida: ticket.salidaSimulada.toISOString() 
+        .update({
+          estado: 'pagado',
+          hora_salida: ticket.salidaSimulada.toISOString()
         })
         .eq('id_ticket', ticket.id_ticket);
-      
+
       if (errTicket) throw errTicket;
 
       // 2. Liberar la plaza
@@ -82,10 +119,10 @@ export default function OperarioCobro() {
       const { error: errPago } = await supabase
         .from('pagos')
         .insert([{
-            monto: ticket.montoCalulado,
-            metodo_pago: metodo,
-            id_ticket: ticket.id_ticket,
-            id_operario: sesionOperario.id_operario
+          monto: ticket.montoCalulado,
+          metodo_pago: metodo,
+          id_ticket: ticket.id_ticket,
+          id_operario: sesionOperario.id_operario
         }]);
 
       if (errPago) throw errPago;
@@ -115,9 +152,9 @@ export default function OperarioCobro() {
 
       <div className="dark-card p-10 mb-8 border-brand/10 relative overflow-hidden group">
         <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
-           <Search className="w-32 h-32" />
+          <Search className="w-32 h-32" />
         </div>
-        
+
         <label className="block text-xs font-black text-dark-muted uppercase tracking-[0.2em] mb-4 ml-1">
           Identificador del Ticket
         </label>
@@ -143,7 +180,7 @@ export default function OperarioCobro() {
             {error}
           </div>
         )}
-        
+
         {resultado && (
           <div className="mt-6 p-6 bg-green-500/10 border border-green-500/20 rounded-2xl flex items-start gap-4 text-green-400 animate-in zoom-in">
             <CheckCircle2 className="w-6 h-6 flex-shrink-0" />
@@ -158,7 +195,7 @@ export default function OperarioCobro() {
             <h3 className="text-brand font-black text-xs uppercase tracking-widest">Liquidación de Servicio</h3>
             <span className="text-[10px] font-black p-1 px-3 bg-brand/20 rounded-full">ESTADO: PENDIENTE</span>
           </div>
-          
+
           <div className="p-10">
             <div className="grid grid-cols-2 gap-8 mb-10">
               <div className="bg-white/5 p-4 rounded-2xl border border-white/5">
@@ -168,7 +205,7 @@ export default function OperarioCobro() {
               <div className="bg-white/5 p-4 rounded-2xl border border-white/5">
                 <p className="text-[10px] text-dark-muted font-black uppercase tracking-widest mb-1">Hora Ingreso</p>
                 <p className="font-bold text-white uppercase italic">
-                  {new Date(ticket.hora_entrada).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'})}
+                  {new Date(ticket.hora_entrada).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
                 </p>
               </div>
               <div className="bg-white/5 p-4 rounded-2xl border border-white/5">

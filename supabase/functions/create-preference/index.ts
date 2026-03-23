@@ -1,11 +1,12 @@
 import { MercadoPagoConfig, Preference } from 'npm:mercadopago'
 
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-Deno.serve(async (req) => {
+Deno.serve(async (req: Request) => {
   // Manejo de peticiones preflight (CORS)
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
@@ -16,7 +17,7 @@ Deno.serve(async (req) => {
 
     // Obtener el token de los Secrets de Supabase
     const accessToken = Deno.env.get('MP_ACCESS_TOKEN')
-    
+
     if (!accessToken) {
       console.error('ERROR: MP_ACCESS_TOKEN no encontrado en variables de entorno')
       return new Response(
@@ -42,6 +43,7 @@ Deno.serve(async (req) => {
         failure: 'https://www.google.com',
         pending: 'https://www.google.com',
       },
+      notification_url: `${Deno.env.get('SUPABASE_URL')}/functions/v1/mp-webhook`,
       // auto_return: 'approved', // Comentado temporalmente por error de validación
       external_reference: external_reference
     }
@@ -54,16 +56,16 @@ Deno.serve(async (req) => {
 
     return new Response(
       JSON.stringify({ id: result.id, init_point: result.init_point }),
-      { 
+      {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 200,
       },
     )
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error en la Edge Function:', error.message)
     return new Response(
       JSON.stringify({ error: error.message }),
-      { 
+      {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 500,
       },
