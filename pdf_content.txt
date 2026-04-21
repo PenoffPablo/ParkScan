@@ -1,0 +1,672 @@
+
+
+Sistema Automatizado de Gestión de 
+Estacionamiento 
+
+Sistema Automatizado de Gestión de Estacionamiento 
+ 
+ 
+ 
+
+Etapa 1 
+ 
+
+ETAPA 1: DEFINICIÓN DEL PROYECTO Y 
+CASO DE NEGOCIO 
+1.1 Presentación y Justificación del Proyecto 
+El proyecto consiste en el diseño y desarrollo de ParkScan, un sistema automatizado de 
+gestión integral para playas de estacionamiento. El núcleo del sistema está diseñado para 
+transformar la gestión operativa mediante cuatro pilares fundamentales: control de flujo de 
+vehículos, optimización de activos a través del monitoreo en tiempo real, gestión 
+transaccional segura y generación de inteligencia de negocio mediante reportes detallados. 
+Justificación Técnica y de Negocio: La propuesta surge como respuesta a la necesidad de 
+modernizar estacionamientos de distintas dimensiones que actualmente operan de forma 
+manual. El conteo manual suele generar errores críticos, demoras operativas y falta de 
+transparencia financiera. ParkScan se diferencia por su enfoque de Producto Mínimo Viable 
+(MVP): ofrece una alternativa económica y escalable que reduce costos de infraestructura al 
+no depender de sensores físicos complejos, utilizando en su lugar un modelo lógico basado 
+en tecnología de códigos QR para el registro de estadías. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+1.2 Análisis del Entorno 
+Entorno Interno (La Organización) 
+La organización objetivo es una empresa de gestión de estacionamientos con una 
+estructura operativa pequeña y un grado de digitalización bajo, donde predominan los 
+registros en papel o herramientas informáticas aisladas. A pesar de esto, existe una visión 
+estratégica hacia la modernización y la optimización de procesos para reducir el error 
+humano. El equipo de desarrollo cuenta con los conocimientos técnicos en programación 
+(Python/Flask) y bases de datos (MySQL) necesarios para ejecutar el proyecto, apoyándose 
+en software libre para garantizar la viabilidad. 
+Entorno Externo (El Mercado) 
+El mercado de estacionamientos urbanos en zonas céntricas (como Mendoza o San Rafael) 
+es altamente competitivo y está regulado por normativas municipales sobre tarifas y 
+seguridad. Si bien existen sistemas de alta gama con barreras automatizadas y sensores de 
+masa, su elevado costo de implementación los vuelve inaccesibles para comercios 
+medianos. ParkScan ocupa este nicho, proporcionando una herramienta profesional que 
+proyecta una imagen corporativa adecuada y cumple con los requisitos de licenciamiento 
+abierto. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+1.3 Objetivos y Alcances Preliminares 
+Objetivos Estratégicos 
+● Control de Ocupación: Gestionar en tiempo real la disponibilidad de espacios por 
+sectores y de forma global para optimizar el uso del predio. 
+● Automatización Transaccional: Implementar la emisión y validación de tickets QR 
+para agilizar el ingreso, el cálculo exacto de tarifas y el proceso de cobro. 
+● Trazabilidad y Auditoría: Generar una base de datos confiable que permita auditar 
+la recaudación diaria, segregada por turnos y operarios responsables. 
+● Experiencia del Usuario: Ofrecer una interfaz minimalista y funcional que 
+simplifique la interacción tanto para el personal de playa como para los conductores. 
+Alcance del Software 
+El sistema ParkScan integrará las siguientes capacidades funcionales: 
+● Arquitectura de Tres Capas (Three-Tier Architecture): El sistema se estructurará 
+mediante una separación modular estricta para garantizar la escalabilidad y el 
+mantenimiento. 
+● Capa de Presentación (Frontend): Interfaces de usuario diferenciadas para 
+Administradores, Operarios y Clientes. 
+● Capa de Lógica de Negocio (Backend): Desarrollada en Flask (Python), 
+encargada de orquestar la lógica transaccional, el cálculo de tarifas y la 
+comunicación con servicios externos. 
+● Capa de Persistencia (Datos): Una base de datos relacional en MySQL que 
+asegura la integridad de los registros operativos y financieros. 
+Gestión de Inventario y Activos: Módulos específicos para la administración granular 
+de la topología física del estacionamiento. 
+● Sectores: Segmentación del predio para una mejor organización logística. 
+● Plazas: Identificación individual y monitoreo en tiempo real del estado de cada 
+espacio (Libre/Ocupado). 
+Módulo de Gestión Transaccional y Pasarela de Pagos (API): Este componente es el 
+núcleo financiero del sistema y cumple con el requisito de integración externa. 
+ 
+
+● Integración de API de Pagos: Consumo de servicios externos (como Mercado 
+Pago u otras pasarelas electrónicas) para administrar cobros de forma segura y 
+automatizada. 
+● Cálculo Dinámico de Tarifas: Algoritmo que procesa el tiempo exacto de estadía 
+para generar el monto a abonar, eliminando errores de cálculo manual. 
+● Validación de Salida: Sistema que confirma la conciliación automática del pago 
+para habilitar la liberación de la barrera de salida. 
+Panel Administrativo e Inteligencia de Negocio: Interfaz estratégica para la toma de 
+decisiones basada en datos reales. 
+● Métricas de Desempeño: Visualización en tiempo real de la ocupación, flujo de 
+ingresos y volumen de tráfico. 
+● Reportes Operativos: Generación de informes exportables en formatos 
+normalizados como PDF y CSV. 
+● Auditoría de Cierres Contables: Mecanismo de consolidación financiera diaria que 
+agrupa transacciones por turno y operario para garantizar la transparencia total. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+Etapa 2 
+ 
+
+ETAPA 2: ANÁLISIS DE FACTIBILIDAD Y 
+PROPUESTA TÉCNICA  
+2.1 Matriz de Factibilidad Multidimensional 
+Para asegurar que el proyecto sea ejecutable y sostenible, se ha realizado un desglose 
+exhaustivo de los factores de viabilidad: 
+● Factibilidad Técnica: El proyecto es técnicamente posible ya que se apoya en 
+tecnologías conocidas y accesibles para el equipo, como Python y Flask para la 
+lógica de backend, y MySQL para la persistencia de datos. El equipo cuenta con los 
+conocimientos necesarios adquiridos en el cursado para manejar la concurrencia de 
+usuarios y la conexión a bases de datos. Además, al no requerir integración con 
+software externo complejo inicialmente, se reducen los riesgos técnicos 
+significativamente. Los riesgos identificados, como el manejo de concurrencia y la 
+integridad de los datos, son manejables mediante la aplicación de buenas prácticas 
+de desarrollo y pruebas de estrés. 
+● Factibilidad Económica: El proyecto es económicamente viable, ya que no 
+requiere inversión en hardware especializado. Todo el desarrollo se realizará con 
+software libre o gratuito, como Python, Flask, MySQL y Figma. La inversión principal 
+reside en el tiempo de trabajo del equipo. A largo plazo, el costo-beneficio es 
+positivo, ya que la automatización optimiza la gestión, evita errores humanos y 
+reduce costos operativos en estacionamientos. 
+● Factibilidad Operativa: El proyecto puede llevarse a cabo sin inconvenientes 
+operativos, dado que el equipo posee competencias en programación, diseño de 
+bases de datos y gestión ágil. El sistema no modifica flujos de trabajo complejos; 
+simplifica las tareas de control reemplazando el conteo manual por una interfaz 
+automatizada. La adopción por parte del personal será fluida debido a una interfaz 
+diseñada bajo principios de simplicidad. 
+● Factibilidad Legal: El sistema cumple con la normativa legal vigente, ya que no 
+recopila información sensible de los usuarios finales. Los datos manejados (patente, 
+hora de entrada/salida, sector) son de carácter operativo. Asimismo, se utilizan 
+librerías con licencias abiertas como ZXing y PyQRCode, cumpliendo con los 
+requisitos de licenciamiento de software libre. 
+ 
+
+● Factibilidad Política: Actualmente, el proyecto no cuenta con el apoyo de 
+Stakeholders externos (interesados reales), por lo que se define como una iniciativa 
+interna de carácter académico. 
+2.2 Metodología de Desarrollo y Ciclo de Vida del 
+Software 
+Se ha seleccionado el marco de trabajo Scrum, alineado con un enfoque ágil que permite la 
+entrega de valor incremental: 
+● Desarrollo Iterativo: El trabajo se divide en sprints cortos para entregar avances 
+funcionales constantes, permitiendo una mejor adaptación a cambios y 
+retroalimentación continua. 
+● Marco PMBOK®: La gestión integral se rige bajo los lineamientos del PMBOK® 
+7ma Edición, asegurando que el sistema evolucione de forma consistente hasta su 
+despliegue final. 
+● Justificación Académica: El enfoque ágil se ajusta de manera óptima a la dinámica 
+de trabajo y los tiempos del cuatrimestre universitario. 
+2.3 Propuesta Técnica Detallada (Stack Tecnológico) 
+La infraestructura tecnológica se ha definido priorizando la robustez, el mantenimiento y la 
+escalabilidad: 
+● Backend y Lógica: Empleo de Python con el framework Flask, priorizando la 
+robustez y la facilidad de mantenimiento. 
+● Persistencia de Datos: Uso de MySQL normalizado para asegurar la persistencia, 
+administración de transacciones y auditoría. 
+● Tecnología QR: Integración de bibliotecas ZXing y PyQRCode para la generación y 
+escaneo de códigos bidimensionales. 
+● Reportería: Generación de informes operacionales en formatos normalizados como 
+PDF y CSV. 
+● Integraciones (API): Se prevé la integración de pasarelas de pago electrónico para 
+administrar cobros, agilizar el flujo de salida y conciliar automáticamente el estado 
+del ticket. 
+2.4 Diseño de Interfaz y Arquitectura de Información 
+ 
+
+El diseño se fundamenta en el minimalismo funcional, dividiendo la arquitectura en cuatro 
+componentes esenciales: 
+1. Emisión: Generación rápida de tickets al ingreso del vehículo. 
+2. Administración: Visualización en tiempo real de la ocupación por sectores. 
+3. Caja: Escaneo, cálculo de tarifas y procesamiento de pagos. 
+4. Validación: Control final de barrera para garantizar el egreso seguro. 
+2.5 Prototipo UI/UX (Mockups) 
+El prototipo visual refleja la simplicidad operativa necesaria para el flujo constante de una 
+playa de estacionamiento: 
+● Interfaz de Entrada: Pantalla de bienvenida con opción clara de "ENTRADA". 
+● Ticket Digital: Comprobante que incluye el ID del ticket, la hora de entrada exacta y 
+la recomendación de conservarlo para la salida. 
+● Interfaz de Salida: Pantalla de despedida ("¡Hasta Pronto!") que confirma la 
+finalización del servicio tras el pago. 
+2.6 Estructura Organizacional del Proyecto 
+● Liderazgo del Proyecto: La dirección ha sido asignada a Pablo Penoff, debido a su 
+perfil técnico y competencias en planificación estratégica, coordinación de equipos y 
+comunicación efectiva. 
+● Rol del Líder: Abarca la facilitación de procesos metodológicos, gestión de 
+impedimentos y comunicación con los interesados. 
+● Equipo Técnico: Conformado por Anzaldo Kevin, Atencio Juan Manuel, Muñoz 
+Maximo y Navas Francisco. 
+ 
+ 
+ 
+
+Etapa 3 
+ 
+
+ETAPA 3 – PLANIFICACIÓN DE LA GESTIÓN DEL 
+PROYECTO 
+ 
+3.1 Desglose del Alcance (Product Backlog) 
+El alcance del proyecto se organiza mediante un Product Backlog, el cual contiene 
+todas las funcionalidades necesarias para el desarrollo del sistema. 
+ 
+Interfaz de Administrador (Dueño del estacionamiento) 
+ 
+ 
+ID Historia de Usuario Prioridad Valor de Negocio 
+PB1 Como administrador quiero 
+iniciar sesión para acceder al 
+sistema. 
+Alta Seguridad y control de 
+acceso administrativo. 
+PB2 Como administrador quiero 
+acceder al panel administrativo. 
+Alta Centralización de la 
+gestión operativa. 
+PB3 Como administrador quiero crear 
+sectores del estacionamiento. 
+Alta Organización de la 
+topología física del predio. 
+ 
+
+PB4 Como administrador quiero editar 
+sectores. 
+Alta Adaptabilidad ante 
+cambios en la estructura. 
+PB5 Como administrador quiero 
+eliminar sectores. 
+Media Depuración de sectores 
+fuera de servicio. 
+PB6 Como administrador quiero crear 
+plazas dentro de cada sector. 
+Alta Definición granular del 
+inventario de espacios. 
+PB7 Como administrador quiero editar 
+plazas. 
+Alta Actualización del estado 
+operativo de activos. 
+PB8 Como administrador quiero 
+eliminar plazas. 
+Media Gestión del ciclo de vida 
+de los activos. 
+PB9 Como administrador quiero 
+visualizar la ocupación del 
+estacionamiento. 
+Alta Monitoreo en tiempo real 
+para la toma de 
+decisiones. 
+PB10 Como administrador quiero 
+generar reportes operativos. 
+Alta Análisis de métricas de 
+uso y eficiencia. 
+PB11 Como administrador quiero ver la 
+recaudación diaria. 
+Alta Visibilidad inmediata del 
+flujo de ingresos. 
+ 
+
+PB12 Como administrador quiero 
+visualizar la recaudación por 
+turno. 
+Alta Auditoría financiera por 
+franjas horarias. 
+PB13 Como administrador quiero ver 
+cuánto cobró cada operario. 
+Alta Control de rendición de 
+cuentas individual. 
+PB14 Como administrador quiero 
+generar el cierre contable del día. 
+Alta Consolidación financiera y 
+trazabilidad de caja. 
+ 
+Interfaz de Operarios (Personal del estacionamiento) 
+ 
+ID Historia de Usuario Prioridad Valor de Negocio 
+PB15 Como operario quiero visualizar 
+el estado de las plazas del 
+estacionamiento para saber 
+cuáles están disponibles u 
+ocupadas. 
+Alta Organización eficiente del 
+ingreso de vehículos. 
+ 
+ 
+ 
+ 
+ 
+
+PB16 Como operario quiero visualizar 
+el cálculo automático de la tarifa 
+según el tiempo estacionado 
+para cobrar correctamente al 
+cliente. 
+Alta Eliminación de errores en 
+cobros. 
+PB17 Como operario quiero registrar 
+el pago en efectivo del 
+estacionamiento para confirmar 
+que el servicio fue abonado. 
+Alta Registro contable de 
+operaciones. 
+PB18 Como operario quiero visualizar 
+únicamente los pagos 
+realizados durante mi turno para 
+llevar un control de la 
+recaudación de mi jornada. 
+Alta Control de caja por turno. 
+PB19 Como operario quiero registrar 
+el inicio de mi turno de trabajo 
+para que el sistema identifique 
+quién está operando. 
+Alta Trazabilidad de 
+operaciones. 
+PB20 Como operario quiero cerrar mi 
+turno y registrar el total 
+recaudado para dejar 
+constancia del dinero generado 
+durante mi jornada. 
+Alta Control administrativo de 
+turnos. 
+ 
+Interfaz de Clientes 
+ 
+ 
+
+ID Historia de Usuario Prioridad Valor de Negocio 
+PB21 Como cliente quiero recibir un 
+ticket con código QR al ingresar. 
+Alta Comprobante físico y digital 
+de la estadía. 
+PB22 Como cliente quiero ver una 
+confirmación de ingreso. 
+Alta Seguridad y transparencia 
+en el inicio del servicio. 
+PB23 Como cliente quiero pagar el 
+estacionamiento antes de salir. 
+Alta Regularización de la deuda 
+para permitir el egreso. 
+PB24 Como cliente quiero validar el 
+ticket para salir. 
+Alta Autogestión del proceso de 
+salida final. 
+ 
+Backlog Técnico 
+ 
+ID Tarea Técnica Objetivo Técnico 
+PB25 Diseño del DER. Estructuración lógica de la base de 
+datos. 
+PB26 Diseño de base de datos. Implementación física del esquema en 
+MySQL. 
+ 
+
+PB27 Desarrollo del backend con 
+Flask. 
+Creación de la lógica de negocio 
+escalable. 
+PB28 Integración con MySQL. Persistencia y seguridad de los 
+registros operativos. 
+PB29 Implementación de generación 
+de QR. 
+Automatización de la identificación de 
+activos. 
+PB30 Generación de reportes. Extracción de datos para inteligencia 
+de negocio. 
+PB31 Implementación del módulo 
+contable. 
+Lógica de auditoría y cierre diario. 
+PB32 Implementación del cierre 
+contable diario. 
+Consolidación periódica de estados 
+financieros. 
+PB33  Implementación de Tests 
+Unitarios (CRUD) 
+Garantía de integridad referencial 
+operario-pago. 
+PB34 Hashing de contraseñas 
+(Seguridad) 
+Asegurar calidad de código y facilidad 
+de mantenimiento. 
+ 
+ 
+
+3.2 Gestión del Tiempo 
+La planificación temporal del proyecto se estructura bajo el marco de trabajo Scrum, 
+organizando el desarrollo en Sprints iterativos de dos semanas de duración. 
+El proyecto tendrá una duración total estimada de 12 semanas, distribuidas en 6 Sprints, 
+cada uno con objetivos específicos alineados al Product Backlog. 
+Planificación Temporal del Proyecto 
+Sprint Duración Semanas Fase 
+Sprint 1 2 semanas Semana 1 – 2 Infraestructura 
+Sprint 2 2 semanas Semana 3 – 4 Gestión Administrativa 
+Sprint 3 2 semanas Semana 5 – 6 Control de Ingresos 
+Sprint 4 2 semanas Semana 7 – 8 Pagos y Egresos 
+Sprint 5 2 semanas Semana 9 – 10 Control Contable 
+Sprint 6 2 semanas Semana 11 – 12 Reportes y Cierre 
+Duración total estimada del proyecto: 12 semanas (3 meses). 
+Fase de Cimentación e Infraestructura 
+Sprint 1 – Diseño y Arquitectura 
+Objetivos Estratégicos 
+● Modelado del Diagrama Entidad-Relación (DER). 
+ 
+● Diseño físico de la base de datos en MySQL. 
+ 
+● Configuración del entorno de desarrollo (Python + Flask). 
+ 
+● Definición de la arquitectura del sistema. 
+ 
+ 
+ 
+ 
+ 
+
+Entregables Técnicos 
+● Documento del DER final. 
+ 
+● Script de creación de base de datos. 
+ 
+● Proyecto base configurado en Flask. 
+ 
+ 
+Sprint 2 – Gestión Administrativa (Core) 
+Objetivos Estratégicos 
+● Implementación del módulo de autenticación (Login). 
+ 
+● Desarrollo del panel administrativo principal. 
+ 
+● Implementación de CRUD de Sectores. 
+ 
+● Implementación de CRUD de Plazas. 
+ 
+Entregables Técnicos 
+● Panel administrativo funcional (MVP del sistema). 
+ 
+● Gestión completa de sectores y plazas. 
+ 
+Fase de Operación y Transaccionalidad 
+Sprint 3 – Control de Ingresos 
+Objetivos Estratégicos 
+● Desarrollo del registro de ingreso de vehículos. 
+ 
+● Generación automática de tickets con código QR. 
+ 
+● Registro automático de hora de ingreso. 
+ 
+● Visualización de plazas disponibles en tiempo real. 
+ 
+Entregables Técnicos 
+ 
+
+● Sistema de emisión de tickets operativo. 
+ 
+● Dashboard de ocupación del estacionamiento. 
+ 
+ 
+Sprint 4 – Ciclo de Pago y Egreso 
+Objetivos Estratégicos 
+● Implementación de escaneo de tickets QR. 
+ 
+● Cálculo automático de tarifa según tiempo de estadía. 
+ 
+● Registro del pago en efectivo del estacionamiento. 
+ 
+● Validación de salida del vehículo. 
+ 
+Entregables Técnicos 
+● Sistema de cobro funcional. 
+ 
+● Validación automática de salida de vehículos. 
+ 
+ 
+ 
+Fase de Auditoría y Cierre 
+Sprint 5 – Integridad Contable 
+Objetivos Estratégicos 
+● Registro contable de cada operación de pago. 
+ 
+● Asociación entre Ticket, Pago, Operario y Turno. 
+ 
+● Implementación del módulo de turnos de operarios. 
+ 
+ 
+
+● Cálculo de ingresos por franja horaria. 
+ 
+Entregables Técnicos 
+● Sistema de control contable integrado. 
+ 
+● Gestión completa de turnos de operarios. 
+ 
+ 
+Sprint 6 – Inteligencia Operacional y Cierre 
+Objetivos Estratégicos 
+● Automatización del cierre contable diario. 
+ 
+● Generación de reportes operativos y financieros. 
+ 
+● Pruebas integrales del sistema. 
+ 
+● Elaboración de documentación técnica y manuales de usuario. 
+ 
+Entregables Técnicos 
+● Sistema completo y funcional. 
+ 
+● Reportes operativos implementados. 
+ 
+● Documentación final del proyecto. 
+ 
+ 
+ 
+
+Etapa 3 parte 2 
+ 
+
+ 
+ 
+
+Etapa 3 parte 3 
+ 
+
+3. Entregable de Testing (Calidad de Software) El código entregado en el prototipo debe 
+estar respaldado por pruebas de calidad. 
+● Plan de Pruebas Unitarias: Deben presentar un plan de pruebas documentado, 
+enfocado específicamente en evaluar la funcionalidad CRUD que desarrollaron en el 
+punto anterior. 
+● Evidencia de Ejecución: El plan por sí solo no es suficiente. Deben adjuntar la 
+evidencia concreta de que las pruebas unitarias fueron ejecutadas sobre el código. 
+ 
+ 
+
+info extra 
+ 
+
+ 
+Modelo de Datos – DER 
+El sistema emplea una base de datos relacional para gestionar de manera íntegra la 
+información del estacionamiento, el flujo de vehículos, el registro transaccional de 
+tickets y la trazabilidad de los pagos realizados. El diseño se centra en la integridad 
+referencial para asegurar la persistencia y coherencia de los datos operativos. 
+ 
+Entidad Atributos Principales Descripción Técnica 
+Administrador id_admin (PK), usuario, password Gestión de credenciales 
+para el nivel estratégico. 
+Operario id_operario (PK), nombre, apellido, 
+usuario, password, estado 
+Personal encargado de la 
+operación en playa. 
+Turno id_turno (PK), nombre_turno, hora_inicio, 
+hora_fin 
+Definición de franjas 
+horarias operativas. 
+Sector id_sector (PK), nombre, capacidad Segmentación física del 
+establecimiento. 
+Plaza id_plaza (PK), numero, estado, id_sector 
+(FK) 
+Identificación individual de 
+espacios de 
+estacionamiento. 
+ 
+
+Vehículo id_vehiculo (PK), patente Registro de unidades que 
+ingresan al sistema. 
+Ticket id_ticket (PK), fecha, hora_entrada, 
+hora_salida, estado, id_plaza (FK), 
+id_vehiculo (FK), id_operario (FK), 
+id_turno (FK) 
+Documento transaccional 
+de ingreso y estadía. 
+Pago id_pago (PK), monto, fecha_pago, 
+metodo_pago, id_ticket (FK), id_operario 
+(FK), id_turno (FK) 
+Registro de cobro y 
+liquidación del servicio. 
+Cierre Diario id_cierre (PK), fecha, total_recaudado Consolidación financiera 
+de la jornada. 
+ 
+ 
+ 
+El sistema establece vínculos lógicos que garantizan que cada operación sea 
+rastreable hasta su origen: 
+● Infraestructura: Un Sector contiene múltiples Plazas (1:N). Cada Plaza puede 
+estar asociada a múltiples Tickets a lo largo del tiempo (1:N). 
+ 
+● Operación: Un Vehículo puede generar múltiples Tickets en distintas visitas 
+(1:N). 
+ 
+● Responsabilidad: Un Operario y un Turno específico pueden estar vinculados 
+a múltiples Tickets y Pagos (1:N), permitiendo auditar la recaudación 
+individual. 
+ 
+ 
+
+● Finalización: Existe una relación biunívoca entre Ticket y Pago (1:1), 
+asegurando que cada servicio tenga un único comprobante de cancelación 
+de deuda. 
+Registro contable del sistema 
+El sistema incorporará un módulo contable que permitirá registrar cada operación 
+realizada dentro del estacionamiento. 
+Cada ingreso de vehículo generará un ticket asociado a una plaza, un operario y un 
+turno de trabajo. Al momento del egreso, se registrará el pago correspondiente al 
+servicio. 
+Esta información permitirá: 
+● Registrar todos los vehículos ingresados durante el día. 
+ 
+● Registrar los pagos realizados por los clientes. 
+ 
+● Asociar cada pago con el operario que realizó la operación. 
+ 
+● Agrupar los ingresos por turnos de trabajo. 
+ 
+● Calcular la recaudación total diaria del estacionamiento. 
+ 
+ 
+ 
+ 
+Registro y Cierre Contable Diario 
+El sistema integra un mecanismo de consolidación financiera que se ejecuta al 
+finalizar cada jornada operativa . Este proceso automatizado agrupa todas las 
+transacciones monetarias registradas para garantizar la transparencia y la rendición 
+de cuentas. 
+Métricas de Consolidación 
+A través del cierre contable, el administrador obtiene una visión integral del 
+desempeño del estacionamiento mediante los siguientes indicadores clave: 
+ 
+ 
+
+Indicador Descripción Objetivo de Control 
+Recaudación Total Sumatoria de todos los pagos 
+registrados en la fecha. 
+Balance de caja diario. 
+Ingresos por Turno Desglose de recaudación según la 
+franja horaria operativa. 
+Análisis de productividad 
+por turno. 
+Ingresos por 
+Operario 
+Totalización de cobros realizados por 
+cada empleado. 
+Auditoría y trazabilidad 
+individual. 
+Volumen de Tráfico Conteo total de vehículos atendidos 
+durante el día. 
+Medición de la demanda 
+del servicio. 
+ 
+ 
+LINK DEL DER  
+ 
