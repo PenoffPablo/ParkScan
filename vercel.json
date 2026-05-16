@@ -1,0 +1,9 @@
+{
+  "name": "parkscan",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
