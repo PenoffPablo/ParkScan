@@ -9,6 +9,12 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: './src/setupTests.js',
+    exclude: ['tests/e2e/**', 'node_modules/**'],
+  },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),

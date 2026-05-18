@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Search, CreditCard, CheckCircle2 } from 'lucide-react';
+import { calculateParkingCost } from '@/utils/pricing';
 
 export default function OperarioCobro() {
   const [codigoQR, setCodigoQR] = useState('');
@@ -58,17 +59,15 @@ export default function OperarioCobro() {
       if (error || !data) throw new Error('Ticket no encontrado o código inválido');
       if (data.estado === 'pagado') throw new Error('Este ticket ya fue pagado y procesado');
 
-      // Calcular tiempo y costo (simulado hasta el momento actual)
+      // Calcular tiempo y costo usando la utilidad refactorizada
       const entrada = new Date(data.hora_entrada);
       const salidaValidacion = new Date();
 
-      const horasMilisegundos = salidaValidacion - entrada;
-      const horasEstacionado = Math.max(1, Math.ceil(horasMilisegundos / (1 * 60 * 60))); // Mínimo 1 hora cobrada
-      const montoTotal = horasEstacionado * COSTO_POR_HORA;
+      const { horasCalculadas, montoTotal } = calculateParkingCost(entrada, salidaValidacion, COSTO_POR_HORA);
 
       setTicket({
         ...data,
-        horasCalculadas: horasEstacionado,
+        horasCalculadas: horasCalculadas,
         montoCalulado: montoTotal,
         salidaSimulada: salidaValidacion
       });

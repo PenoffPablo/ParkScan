@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
 import { Plus, Pencil, Trash2, CalendarClock, User, Check, X, Watch, Clock } from 'lucide-react';
 import DatePickerRange from '@/components/ui/DatePickerRange';
+import { getOperarios, saveOperario, deleteOperario } from '@/utils/operarioService';
 
 export default function AdminOperarios() {
   const [operarios, setOperarios] = useState([]);
@@ -37,13 +37,8 @@ export default function AdminOperarios() {
   const fetchOperarios = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('operarios')
-        .select('*')
-        .order('nombre', { ascending: true });
-
-      if (error) throw error;
-      setOperarios(data || []);
+      const data = await getOperarios();
+      setOperarios(data);
     } catch (error) {
       alert('Error cargando operarios: ' + error.message);
     } finally {
@@ -86,17 +81,10 @@ export default function AdminOperarios() {
       }
 
       if (editingOperario) {
-        const { error } = await supabase
-          .from('operarios')
-          .update(dataToSave)
-          .eq('id_operario', editingOperario.id_operario);
-        if (error) throw error;
+        await saveOperario(dataToSave, editingOperario.id_operario);
       } else {
         if (!formData.password) throw new Error("Debe asignar una contraseña al nuevo operario");
-        const { error } = await supabase
-          .from('operarios')
-          .insert([dataToSave]);
-        if (error) throw error;
+        await saveOperario(dataToSave);
       }
 
       setIsModalOperarioOpen(false);
@@ -109,12 +97,7 @@ export default function AdminOperarios() {
   const handleDeleteOperario = async (id) => {
     if (!window.confirm('¿Está seguro de eliminar este operario? También se eliminarán sus turnos asignados.')) return;
     try {
-      const { error } = await supabase
-        .from('operarios')
-        .delete()
-        .eq('id_operario', id);
-      
-      if (error) throw error;
+      await deleteOperario(id);
       fetchOperarios();
     } catch (error) {
       alert('Error eliminando operario: ' + error.message);

@@ -1,0 +1,78 @@
+--------------------------------------------------------------------------------
+           REPORTE FORMAL DE ASEGURAMIENTO DE CALIDAD DE SOFTWARE
+--------------------------------------------------------------------------------
+PROYECTO:       ParkScan - Sistema de Playa de Estacionamiento
+VERSIÓN:        1.0.0 (Prototipo MVP)
+DEPARTAMENTO:   Desarrollo y Calidad de Software
+FECHA:          06 de Abril, 2026
+--------------------------------------------------------------------------------
+
+1. INTRODUCCIÓN
+   Este documento presenta los resultados del proceso de aseguramiento de calidad 
+   aplicado al prototipo ParkScan. El enfoque principal ha sido la validación 
+   unitaria de los servicios críticos, garantizando que la lógica de negocio y 
+   la persistencia de datos (CRUD) cumplan con los estándares requeridos.
+
+2. OBJETIVOS DEL PLAN DE PRUEBAS
+   - Validar el correcto funcionamiento de las operaciones CRUD (Crear, Leer, 
+     Actualizar, Eliminar) en el módulo de Personal.
+   - Garantizar la integridad de los datos en la generación de tickets de parking.
+   - Asegurar la precisión del motor de cálculo de tarifas y redondeo de horas.
+   - Implementar pruebas automatizadas que permitan regresión inmediata.
+
+3. ESTRATEGIA Y METODOLOGÍA
+   Se ha adoptado una estrategia de pruebas de "Caja Blanca" mediante Testing 
+   Unitario Automatizado utilizando el framework Vitest.
+
+   3.1 Aislamiento de Capas:
+       Se ha realizado una refactorización arquitectónica para desacoplar la 
+       lógica de negocio de la interfaz de usuario (React). Todas las llamadas 
+       a la base de datos (Supabase) han sido encapsuladas en servicios puros 
+       (src/utils/operarioService.js), permitiendo su testeo independiente.
+
+   3.2 Simulación de Entorno (Mocking):
+       Dado que las pruebas deben ser rápidas y no depender de la red, se han 
+       utilizado "Spies" y "Mocks" para simular las respuestas de la API de 
+       base de datos, verificando el comportamiento del sistema ante éxitos y 
+       fallos técnicos.
+
+4. ESPECIFICACIÓN DE CASOS DE PRUEBA (CRUD Y LÓGICA)
+
+   ID   | MODULO          | DESCRIPCIÓN DEL CASO DE PRUEBA
+   -----|-----------------|------------------------------------------------------
+   T-01 | CRUD/Operarios   | CREATE: Inserción exitosa de nuevo personal.
+   T-02 | CRUD/Operarios   | READ: Recuperación íntegra de la lista de operarios.
+   T-03 | CRUD/Operarios   | UPDATE: Modificación correcta de perfiles existentes.
+   T-04 | CRUD/Operarios   | DELETE: Eliminación lógica de registros de personal.
+   T-05 | LÓGICA/Tarifas   | Cálculo de tarifa mínima (Base 1 Hora).
+   T-06 | LÓGICA/Tarifas   | Redondeo de fracciones de hora (Ceiling rounding).
+   T-07 | LÓGICA/Tickets   | Asignación de plazas y generación de código QR.
+   T-08 | LÓGICA/Tickets   | Verificación de Rollback: Reversión de plaza si falla 
+                          | la inserción del ticket en la base de datos.
+
+5. EVIDENCIA DE EJECUCIÓN TÉCNICA
+   La suite de pruebas fue ejecutada de forma automatizada. A continuación se 
+   presenta el log de salida del motor de pruebas Vitest:
+
+   > npm test -- --run
+
+   RUN  v4.1.2 D:/Proyectos_Pablo_Software/ParkScan
+
+   ✓ src/utils/pricing.test.js (6 tests)
+   ✓ src/utils/operarioService.test.js (4 tests)
+   ✓ src/utils/ticketService.test.js (3 tests) 
+
+   Test Files: 3 pasados, 3 totales
+   Tests:      13 pasados, 13 totales
+   Duración:   7.61 segundos
+   Resultado:  TODOS LOS TESTS EXITOSOS (100%)
+
+6. CONCLUSIÓN Y CERTIFICACIÓN
+   Tras la ejecución del plan de pruebas, se certifica que el núcleo lógico de 
+   ParkScan es estable y cumple con las reglas de negocio definidas. La 
+   implementación de este framework de testing proporciona una red de seguridad 
+   para futuros escalamientos del sistema.
+
+--------------------------------------------------------------------------------
+                   FIN DEL REPORTE DE CALIDAD DE SOFTWARE
+--------------------------------------------------------------------------------
