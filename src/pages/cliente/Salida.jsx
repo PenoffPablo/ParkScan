@@ -5,7 +5,7 @@ import { ScanLine, ShieldCheck, XCircle, ClockAlert, ArrowLeft } from 'lucide-re
 export default function ClienteSalida() {
   const [codigoQR, setCodigoQR] = useState('');
   const [loading, setLoading] = useState(false);
-  const [estadoValidacion, setEstadoValidacion] = useState(null); 
+  const [estadoValidacion, setEstadoValidacion] = useState(null);
   const [mensaje, setMensaje] = useState('');
   const inputRef = useRef(null);
 
@@ -13,7 +13,7 @@ export default function ClienteSalida() {
   useEffect(() => {
     inputRef.current?.focus();
     const interval = setInterval(() => {
-      if(!loading && !estadoValidacion) inputRef.current?.focus();
+      if (!loading && !estadoValidacion) inputRef.current?.focus();
     }, 2000);
     return () => clearInterval(interval);
   }, [loading, estadoValidacion]);
@@ -40,35 +40,35 @@ export default function ClienteSalida() {
       }
 
       if (data.estado === 'pendiente') {
-         setEstadoValidacion('pendiente');
-         setMensaje('TICKET NO ABONADO. DIRÍJASE A LA TERMINAL DE PAGO.');
-         resetAfterDelay();
+        setEstadoValidacion('pendiente');
+        setMensaje('TICKET NO ABONADO. DIRÍJASE A LA TERMINAL DE PAGO.');
+        resetAfterDelay();
       } else if (data.estado === 'finalizado') {
-         setEstadoValidacion('finalizado');
-         setMensaje('ESTE TICKET YA HA SIDO UTILIZADO.');
-         resetAfterDelay();
+        setEstadoValidacion('finalizado');
+        setMensaje('ESTE TICKET YA HA SIDO UTILIZADO.');
+        resetAfterDelay();
       } else if (data.estado === 'pagado') {
-         const tiempoPagado = new Date(data.hora_salida); 
-         const msTranscurridos = new Date() - tiempoPagado;
-         const minutos = Math.floor(msTranscurridos / (1000 * 60));
+        const tiempoPagado = new Date(data.hora_salida);
+        const msTranscurridos = new Date() - tiempoPagado;
+        const minutos = Math.floor(msTranscurridos / (1000 * 60));
 
-         if (minutos > 15) {
-             setEstadoValidacion('vencido');
-             setMensaje(`TIEMPO DE TOLERANCIA EXCEDIDO (${minutos} min). DEBE ABONAR ESTADÍA ADICIONAL.`);
-             resetAfterDelay();
-         } else {
-             // AUTO-FINALIZAR y ABRIR BARRERA
-             const { error: updateError } = await supabase
-               .from('tickets')
-               .update({ estado: 'finalizado' })
-               .eq('id_ticket', data.id_ticket);
+        if (minutos > 15) {
+          setEstadoValidacion('vencido');
+          setMensaje(`TIEMPO EXCEDIDO (${minutos} min). Contacte al Operador en la cabina para abonar el excedente.`);
+          resetAfterDelay(10000);
+        } else {
+          // AUTO-FINALIZAR y ABRIR BARRERA
+          const { error: updateError } = await supabase
+            .from('tickets')
+            .update({ estado: 'finalizado' })
+            .eq('id_ticket', data.id_ticket);
 
-             if (updateError) throw updateError;
-             
-             setEstadoValidacion('autorizado');
-             setMensaje('¡PAGO VERIFICADO! BARRERA ABIERTA, BUEN VIAJE.');
-             resetAfterDelay(5000);
-         }
+          if (updateError) throw updateError;
+
+          setEstadoValidacion('autorizado');
+          setMensaje('¡PAGO VERIFICADO! BARRERA ABIERTA, BUEN VIAJE.');
+          resetAfterDelay(5000);
+        }
       }
     } catch (err) {
       setEstadoValidacion('error');
@@ -101,11 +101,11 @@ export default function ClienteSalida() {
 
       <div className="w-full max-w-3xl animate-in fade-in slide-in-from-bottom-8 duration-700">
         <div className="text-center mb-12">
-           <div className="w-24 h-24 bg-brand/10 rounded-3xl mx-auto flex items-center justify-center mb-6 border border-brand/20 shadow-[0_0_50px_rgba(0,158,227,0.15)]">
-             <ScanLine className="w-12 h-12 text-brand" />
-           </div>
-           <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight mb-4">Terminal de Salida</h1>
-           <p className="text-dark-muted font-bold text-lg uppercase tracking-widest">Aproxime su ticket al lector láser de barrera</p>
+          <div className="w-24 h-24 bg-brand/10 rounded-3xl mx-auto flex items-center justify-center mb-6 border border-brand/20 shadow-[0_0_50px_rgba(0,158,227,0.15)]">
+            <ScanLine className="w-12 h-12 text-brand" />
+          </div>
+          <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight mb-4">Terminal de Salida</h1>
+          <p className="text-dark-muted font-bold text-lg uppercase tracking-widest">Aproxime su ticket al lector láser de barrera</p>
         </div>
 
         {!estadoValidacion && !loading && (
@@ -137,18 +137,18 @@ export default function ClienteSalida() {
             ${estadoValidacion === 'pendiente' || estadoValidacion === 'finalizado' || estadoValidacion === 'error' ? 'border-red-500/50 bg-red-500/10 shadow-red-500/20' : ''}
             ${estadoValidacion === 'vencido' ? 'border-orange-500/50 bg-orange-500/10 shadow-orange-500/20' : ''}
           `}>
-             <div className="flex justify-center mb-8">
-                {estadoValidacion === 'autorizado' && <ShieldCheck className="w-32 h-32 md:w-40 md:h-40 text-green-500" />}
-                {(estadoValidacion === 'pendiente' || estadoValidacion === 'finalizado' || estadoValidacion === 'error') && <XCircle className="w-32 h-32 md:w-40 md:h-40 text-red-500" />}
-                {estadoValidacion === 'vencido' && <ClockAlert className="w-32 h-32 md:w-40 md:h-40 text-orange-500" />}
-             </div>
-             <h3 className={`text-2xl md:text-5xl font-black uppercase tracking-wide leading-tight
+            <div className="flex justify-center mb-8">
+              {estadoValidacion === 'autorizado' && <ShieldCheck className="w-32 h-32 md:w-40 md:h-40 text-green-500" />}
+              {(estadoValidacion === 'pendiente' || estadoValidacion === 'finalizado' || estadoValidacion === 'error') && <XCircle className="w-32 h-32 md:w-40 md:h-40 text-red-500" />}
+              {estadoValidacion === 'vencido' && <ClockAlert className="w-32 h-32 md:w-40 md:h-40 text-orange-500" />}
+            </div>
+            <h3 className={`text-2xl md:text-5xl font-black uppercase tracking-wide leading-tight
                 ${estadoValidacion === 'autorizado' ? 'text-green-400' : ''}
                 ${estadoValidacion === 'pendiente' || estadoValidacion === 'finalizado' || estadoValidacion === 'error' ? 'text-red-400' : ''}
                 ${estadoValidacion === 'vencido' ? 'text-orange-400' : ''}
              `}>
-               {mensaje}
-             </h3>
+              {mensaje}
+            </h3>
           </div>
         )}
 
