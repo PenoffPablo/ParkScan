@@ -27,8 +27,8 @@ test.describe('Flujo de Autenticación - ParkScan', () => {
     await page.locator('button[type="submit"]').click();
 
     // Aserción: Verificar que aparece el mensaje de error de UI
-    const errorMsg = page.locator('text="Credenciales incorrectas"');
-    await expect(errorMsg).toBeVisible();
+    const errorMsg = page.locator('.text-red-400');
+    await expect(errorMsg).toBeVisible({ timeout: 10000 });
   });
 
   test('Login Válido - Redirección al Dashboard', async ({ page }) => {

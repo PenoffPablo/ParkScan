@@ -68,10 +68,11 @@ Para ejecutar este proyecto en tu entorno local, asegúrate de contar con:
 
 Una aplicación en producción requiere pruebas sólidas. Hemos implementado **Vitest** como motor de pruebas.
 
-Para ejecutar la batería de pruebas unitarias (servicios de pricing, operarios, sectores, etc.):
+Para ejecutar toda la batería de pruebas (unitarias, integración y E2E de Playwright):
 ```bash
-npm run test
+npm run test:all
 ```
+*(Si solo deseas ejecutar las pruebas unitarias rápidas, puedes utilizar `npm run test:unit`)*
 
 ---
 

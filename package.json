@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
+    "test": "npm run test:all",
     "test:unit": "vitest --run",
     "test:integration": "vitest --run",
     "test:e2e": "playwright test",
