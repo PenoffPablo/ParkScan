@@ -64,6 +64,8 @@ test.describe('Flujo de Pago e Integración API - ParkScan', () => {
     let dialogMessage = '';
     page.on('dialog', async dialog => {
       dialogMessage = dialog.message();
+      // Esperar 5 segundos para que se pueda leer visualmente el alert
+      await page.waitForTimeout(5000);
       await dialog.accept();
     });
 
