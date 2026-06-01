@@ -133,12 +133,12 @@ export default function AdminSectores() {
 
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <div className="flex items-center gap-4 mb-10">
-        <div className="p-3 bg-brand/10 border border-brand/20 rounded-2xl">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-10">
+        <div className="p-3 bg-brand/10 border border-brand/20 rounded-2xl w-max">
           <LayoutGrid className="w-8 h-8 text-brand" />
         </div>
         <div>
-          <h2 className="text-3xl font-black text-white tracking-tight leading-none mb-1">Arquitectura de Espacios</h2>
+          <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-none mb-1">Arquitectura de Espacios</h2>
           <p className="text-dark-muted font-bold text-xs uppercase tracking-widest">Gestión de niveles, sectores y plazas</p>
         </div>
       </div>
@@ -186,9 +186,9 @@ export default function AdminSectores() {
       <div className="grid gap-10">
         {sectores.map((sector) => (
           <div key={sector.id_sector} className="dark-card overflow-hidden border-brand/5 group hover:border-brand/20 transition-all duration-500">
-            <div className={`p-8 border-b border-dark-border flex justify-between items-center bg-white/[0.01] group-hover:bg-brand/[0.02] transition-colors`}>
+            <div className={`p-6 sm:p-8 border-b border-dark-border flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white/[0.01] group-hover:bg-brand/[0.02] transition-colors`}>
               <div>
-                <div className="flex items-center gap-3 mb-1">
+                <div className="flex flex-wrap items-center gap-3 mb-1">
                   <h3 className="text-2xl font-black text-white tracking-tight">{sector.nombre}</h3>
                   {sector.estado === 'mantenimiento' && (
                     <span className="text-[9px] font-black bg-orange-500/10 text-orange-500 px-3 py-1 rounded-full border border-orange-500/20 uppercase tracking-widest">En Pausa</span>
@@ -216,8 +216,8 @@ export default function AdminSectores() {
               </div>
             </div>
 
-            <div className="p-10 bg-dark-bg/30">
-              <div className="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-10 lg:grid-cols-12 gap-4">
+            <div className="p-6 sm:p-10 bg-dark-bg/30">
+              <div className="grid grid-cols-3 min-[400px]:grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 xl:grid-cols-12 gap-3 sm:gap-4">
                 {sector.plazas?.sort((a, b) => a.numero.localeCompare(b.numero, undefined, { numeric: true })).map((plaza) => {
                   let style = 'bg-white/5 text-dark-muted/20 border-white/5';
                   if (plaza.estado === 'libre') style = 'bg-green-500/5 text-green-500/80 border-green-500/10 hover:bg-green-500/10 hover:border-green-500/30 shadow-[0_0_20px_rgba(34,197,94,0.02)]';

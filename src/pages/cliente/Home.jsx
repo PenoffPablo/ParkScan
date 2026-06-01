@@ -82,7 +82,7 @@ export default function ClienteHome() {
         <div className="p-4 bg-white/5 rounded-3xl border border-white/10 backdrop-blur-xl mb-4 mx-auto w-max shadow-2xl">
           <Car className="w-12 h-12 text-brand" />
         </div>
-        <h1 className="text-5xl md:text-6xl font-black text-white mb-2 tracking-tighter leading-none">ParkScan</h1>
+        <h1 className="text-4xl md:text-6xl font-black text-white mb-2 tracking-tighter leading-none px-4">ParkScan</h1>
       </div>
 
       <div className={`
@@ -99,7 +99,7 @@ export default function ClienteHome() {
         </h2>
 
         <div className={`
-          text-7xl md:text-8xl font-black mb-2 tracking-tighter transition-colors duration-700
+          text-6xl md:text-8xl font-black mb-2 tracking-tighter transition-colors duration-700
           ${sinLugar ? 'text-red-500' : 'text-white'}
         `}>
           {plazasDisponibles}
@@ -112,7 +112,7 @@ export default function ClienteHome() {
       </div>
 
       {/* 3 BOTONES PRINCIPALES */}
-      <div className="flex flex-col md:flex-row justify-center gap-5 w-full max-w-5xl relative z-10 mb-auto">
+      <div className="flex flex-col md:flex-row justify-center gap-4 md:gap-5 w-full max-w-5xl relative z-10 mb-auto px-2 sm:px-0">
 
         {/* BOTÓN 1: Generar QR / Ingreso */}
         <button
@@ -172,7 +172,7 @@ export default function ClienteHome() {
       {/* MODAL DEL TICKET GENERADO */}
       {ticketAsignado && (
         <div className="fixed inset-0 bg-dark-bg/80 flex justify-center items-center z-50 p-4 backdrop-blur-xl transition-all animate-in fade-in zoom-in duration-300">
-          <div className="bg-dark-card border border-dark-border rounded-[2.5rem] p-10 max-w-sm w-full shadow-[0_0_50px_rgba(0,0,0,0.5)] relative text-center">
+          <div className="bg-dark-card border border-dark-border rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-10 max-w-sm w-full shadow-[0_0_50px_rgba(0,0,0,0.5)] relative text-center">
             <button
               onClick={() => setTicketAsignado(null)}
               className="absolute top-6 right-6 text-dark-muted hover:text-white bg-white/5 rounded-full p-2 transition-colors border border-white/5"
@@ -188,9 +188,10 @@ export default function ClienteHome() {
               </div>
               <QRCodeSVG
                 value={ticketAsignado.codigo_qr}
-                size={180}
+                size={160}
                 level="Q"
                 includeMargin={false}
+                className="w-full h-auto max-w-[160px] sm:max-w-[180px]"
               />
             </div>
 
@@ -217,7 +218,7 @@ export default function ClienteHome() {
       {/* MODAL DE LOGIN OPTIONS */}
       {showLoginOptions && (
         <div className="fixed inset-0 bg-dark-bg/80 flex justify-center items-center z-50 p-4 backdrop-blur-xl transition-all animate-in fade-in zoom-in duration-300">
-          <div className="bg-dark-card border border-dark-border rounded-[2.5rem] p-10 max-w-sm w-full shadow-[0_0_50px_rgba(168,85,247,0.2)] relative text-center">
+          <div className="bg-dark-card border border-dark-border rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-10 max-w-sm w-full shadow-[0_0_50px_rgba(168,85,247,0.2)] relative text-center">
             <button
               onClick={() => setShowLoginOptions(false)}
               className="absolute top-6 right-6 text-dark-muted hover:text-white bg-white/5 rounded-full p-2 transition-colors border border-white/5"

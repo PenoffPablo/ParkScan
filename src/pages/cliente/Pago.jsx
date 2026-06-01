@@ -209,48 +209,48 @@ export default function ClientePago() {
   }
 
   return (
-    <div className="min-h-screen bg-dark-bg p-6 lg:p-12 relative overflow-hidden flex flex-col items-center">
+    <div className="min-h-screen bg-dark-bg p-4 sm:p-6 lg:p-12 relative overflow-x-hidden flex flex-col items-center">
       <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-brand/5 blur-[150px] rounded-full pointer-events-none"></div>
 
       <button
         onClick={() => window.location.href = '/'}
-        className="absolute top-6 left-6 z-50 flex items-center gap-2 px-5 py-3 rounded-2xl bg-white/5 border border-white/10 text-white font-bold hover:bg-white/10 transition-colors shadow-lg group backdrop-blur-md"
+        className="absolute top-4 left-4 sm:top-6 sm:left-6 z-50 flex items-center gap-2 p-3 sm:px-5 sm:py-3 rounded-2xl bg-white/5 border border-white/10 text-white font-bold hover:bg-white/10 transition-colors shadow-lg group backdrop-blur-md"
       >
         <ArrowLeft className="w-5 h-5 text-dark-muted group-hover:text-white transition-colors" />
         <span className="hidden sm:inline">Volver</span>
       </button>
 
-      <div className="w-full max-w-4xl grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mt-14 lg:mt-0">
+      <div className="w-full max-w-4xl grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center mt-20 lg:mt-0">
 
         {/* Left Side: Info & Input */}
         <div className="animate-in slide-in-from-left duration-700">
-          <div className="flex items-center gap-4 mb-8">
+          <div className="flex items-center gap-4 mb-6 sm:mb-8">
             <div className="p-3 bg-brand/10 border border-brand/20 rounded-2xl">
-              <CreditCard className="w-8 h-8 text-brand" />
+              <CreditCard className="w-6 h-6 sm:w-8 sm:h-8 text-brand" />
             </div>
-            <h1 className="text-4xl font-black text-white tracking-tight">Portal de Pago</h1>
+            <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight">Portal de Pago</h1>
           </div>
 
-          <p className="text-dark-muted text-lg mb-10 leading-relaxed font-medium">
+          <p className="text-dark-muted text-base sm:text-lg mb-8 sm:mb-10 leading-relaxed font-medium">
             Ingrese el código alfanumérico de su ticket para calcular su estadía y abonar mediante Mercado Pago.
           </p>
 
           {!ticket ? (
-            <div className="dark-card p-8 border-brand/10 bg-white/[0.02]">
+            <div className="dark-card p-6 sm:p-8 border-brand/10 bg-white/[0.02]">
               <label className="block text-[10px] font-black text-dark-muted uppercase tracking-[0.2em] mb-4">Código del Ticket</label>
-              <div className="flex gap-4">
+              <div className="flex flex-col sm:flex-row gap-4">
                 <input
                   type="text"
                   placeholder="PS-XXXX-XXXX"
                   value={codigoTicket}
                   onChange={(e) => setCodigoTicket(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && buscarTicket()}
-                  className="input-dark flex-1 py-4 text-xl font-mono uppercase tracking-widest text-center"
+                  className="input-dark flex-1 py-3 sm:py-4 text-lg sm:text-xl font-mono uppercase tracking-widest text-center"
                 />
                 <button
                   onClick={buscarTicket}
                   disabled={loading || !codigoTicket}
-                  className="btn-primary px-8 flex items-center justify-center"
+                  className="btn-primary w-full sm:w-auto px-8 py-3 sm:py-0 flex items-center justify-center"
                 >
                   {loading
                     ? <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>

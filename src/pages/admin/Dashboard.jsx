@@ -193,7 +193,7 @@ export default function AdminDashboard() {
             <Ticket className="w-8 h-8 text-accent relative z-10" />
           </div>
           <div>
-            <h2 className="text-4xl font-black text-white tracking-tight appearance-none mb-1">Centro de Analíticas</h2>
+            <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight appearance-none mb-1">Centro de Analíticas</h2>
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
               <p className="text-dark-muted font-bold text-xs uppercase tracking-widest">Sincronizado Múltiples Turnos</p>
@@ -237,7 +237,7 @@ export default function AdminDashboard() {
               <div className="relative z-10">
                 <p className="text-[10px] font-black text-brand uppercase tracking-[0.2em] mb-4">Eficiencia de Ocupación</p>
                 <div className="flex items-end gap-2">
-                  <span className="text-6xl font-black text-white leading-none">{stats.ocupacion}%</span>
+                  <span className="text-5xl lg:text-6xl font-black text-white leading-none">{stats.ocupacion}%</span>
                 </div>
                 <div className="mt-8 w-full bg-white/5 h-2 rounded-full overflow-hidden shadow-inner">
                    <div className={`h-full transition-all duration-1000 ease-out ${stats.ocupacion > 85 ? 'bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]' : stats.ocupacion > 50 ? 'bg-orange-500 shadow-[0_0_10px_rgba(249,115,22,0.5)]' : 'bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.5)]'}`} style={{width: `${stats.ocupacion}%`}}></div>
@@ -255,7 +255,7 @@ export default function AdminDashboard() {
                    Ingresos Brutos ({rangoTiempo === 'hoy' ? 'Hoy' : rangoTiempo === 'semana' ? '7 Días' : rangoTiempo === 'quincena' ? '15 Días' : 'Este Mes'})
                 </p>
                 <div className="flex items-center gap-1">
-                  <span className="text-5xl lg:text-6xl font-black text-white leading-none break-all">{formatearDinero(stats.recaudacion)}</span>
+                  <span className="text-4xl lg:text-6xl font-black text-white leading-none break-all">{formatearDinero(stats.recaudacion)}</span>
                 </div>
                 <p className="text-[11px] font-bold text-green-500 flex items-center gap-1 uppercase tracking-widest mt-8 bg-green-500/10 w-max px-3 py-1 rounded-full">
                    <ArrowUpRight className="w-3 h-3" /> Sumando en Vivo
@@ -271,8 +271,8 @@ export default function AdminDashboard() {
               <div className="relative z-10">
                 <p className="text-[10px] font-black text-dark-muted uppercase tracking-[0.2em] mb-4">Flujo Histórico de Tickets</p>
                 <div className="flex items-end gap-3">
-                  <span className="text-6xl font-black text-white leading-none">{stats.ticketsHoy}</span>
-                  <span className="text-xs font-bold text-dark-muted mb-2 tracking-widest">TICKETS</span>
+                  <span className="text-5xl lg:text-6xl font-black text-white leading-none">{stats.ticketsHoy}</span>
+                  <span className="text-xs font-bold text-dark-muted mb-1 tracking-widest">TICKETS</span>
                 </div>
                 <div className="mt-8 flex gap-1 h-3 items-end">
                    {[...Array(10)].map((_, i) => (
@@ -324,8 +324,8 @@ export default function AdminDashboard() {
               </h3>
               
               <div className="bg-dark-card border border-dark-border rounded-3xl overflow-hidden shadow-2xl flex-1">
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left">
+                <div className="overflow-x-auto custom-scrollbar">
+                  <table className="w-full text-left min-w-[800px]">
                     <thead>
                       <tr className="border-b border-white/5 bg-white/[0.02]">
                         <th className="px-8 py-5 text-[10px] font-black text-dark-muted uppercase tracking-[0.2em]">Hora</th>

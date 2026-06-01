@@ -1,10 +1,11 @@
 import { Outlet, Link, useNavigate } from 'react-router-dom';
-import { LogOut, Monitor, CreditCard, Clock } from 'lucide-react';
+import { LogOut, Monitor, CreditCard, Clock, Menu, X } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
 export default function OperarioLayout() {
   const navigate = useNavigate();
   const [operador, setOperador] = useState(null);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const session = localStorage.getItem('parkscan_operario');
@@ -19,9 +20,28 @@ export default function OperarioLayout() {
   };
 
   return (
-    <div className="min-h-screen bg-dark-bg flex text-dark-text">
+    <div className="min-h-screen bg-dark-bg flex text-dark-text relative">
+      {/* Mobile Overlay */}
+      {isMobileMenuOpen && (
+        <div 
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-30 lg:hidden"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+
       {/* Sidebar Operario */}
-      <aside className="w-64 bg-dark-card border-r border-dark-border flex flex-col shadow-2xl z-10">
+      <aside className={`
+        fixed inset-y-0 left-0 w-64 bg-dark-card border-r border-dark-border flex flex-col shadow-2xl z-40 transform transition-transform duration-300 ease-in-out
+        lg:relative lg:translate-x-0
+        ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}
+      `}>
+        {/* Close Button Mobile */}
+        <button 
+          onClick={() => setIsMobileMenuOpen(false)}
+          className="absolute top-4 right-4 p-2 bg-white/5 rounded-lg text-dark-muted hover:text-white lg:hidden"
+        >
+          <X className="w-5 h-5" />
+        </button>
         <div className="p-8">
           <h2 className="text-3xl font-black text-white tracking-tighter mb-1">ParkScan</h2>
           <p className="text-xs font-bold text-brand uppercase tracking-widest">Panel Operario</p>
@@ -72,8 +92,17 @@ export default function OperarioLayout() {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-auto bg-dark-bg flex flex-col">
-        <div className="p-10 flex-1">
+      <main className="flex-1 overflow-auto bg-dark-bg flex flex-col h-screen">
+        <header className="bg-dark-card/50 backdrop-blur-md border-b border-dark-border px-6 py-4 flex items-center lg:hidden sticky top-0 z-10">
+           <button 
+            onClick={() => setIsMobileMenuOpen(true)}
+            className="p-2 bg-white/5 border border-white/10 rounded-xl text-white hover:bg-white/10 transition-colors"
+          >
+            <Menu className="w-5 h-5" />
+          </button>
+          <h1 className="text-sm font-bold text-white uppercase tracking-widest ml-4">Panel Operario</h1>
+        </header>
+        <div className="p-6 md:p-10 flex-1 overflow-y-auto">
           <Outlet />
         </div>
       </main>
