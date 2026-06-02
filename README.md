@@ -1,34 +1,43 @@
 # 🅿️ ParkScan - Sistema de Gestión de Playa de Estacionamiento
 
-![Status](https://img.shields.io/badge/Status-En%20Desarrollo-green)
+![Status](https://img.shields.io/badge/Status-Release%20Candidate-success)
 ![React](https://img.shields.io/badge/React-19-blue?logo=react)
 ![Vite](https://img.shields.io/badge/Vite-8-purple?logo=vite)
 ![Supabase](https://img.shields.io/badge/Supabase-Backend-green?logo=supabase)
 ![TailwindCSS](https://img.shields.io/badge/TailwindCSS-4-teal?logo=tailwindcss)
 
-**ParkScan** es un sistema integral y moderno para la gestión, control y automatización de playas de estacionamiento. Diseñado para ofrecer una experiencia fluida, permite el control de ingresos y egresos (vía QR), automatización de cobros, administración de sectores, gestión de operarios y análisis de métricas en tiempo real.
+**ParkScan** es un sistema integral y moderno para la gestión, control y automatización de playas de estacionamiento. Diseñado para ofrecer una experiencia fluida, permite el control de ingresos y egresos (vía QR), automatización de cobros (efectivo y Mercado Pago), administración de sectores, gestión de operarios y análisis de métricas en tiempo real.
+
+---
+
+## 🚀 Características Clave (Release Candidate - Etapa 5)
+
+El sistema en su versión final incluye las siguientes capacidades operativas y de seguridad:
+
+- **Autenticación con Hasheo Bcrypt:** Toda la base de datos de usuarios (Administradores y Operarios) utiliza hasheo de contraseñas no reversible de una vía mediante Bcrypt para la protección de accesos.
+- **Control de Actividad de Operarios:** Expulsión en caliente y denegación de login automática para operarios marcados como `inactivos` por el Administrador.
+- **Ingreso Manual de Patente:** Panel especial para que el operario registre vehículos de forma manual, asocie plazas y genere el comprobante de ingreso.
+- **Ingreso Público de Clientes:** Portal web autónomo para que el cliente consulte disponibilidad y genere un ticket QR en un cajón asignado de forma inteligente.
+- **Cobros Multi-Plataforma:** Soporte para cobro presencial en efectivo y pago digital autónomo mediante la integración con la **API de Mercado Pago** y sincronización en tiempo real vía **Supabase Realtime**.
+
+---
+
+## 📄 Documentación Oficial (Etapa 5)
+
+En la carpeta [`/docs`](./docs/) se encuentran los entregables y guías requeridas para el cierre del proyecto:
+
+1. 📘 **[Guía de Usuario](./docs/guia_usuario.md):** Manual operativo detallando el uso del sistema para Clientes, Operarios y Administradores.
+2. 📙 **[Informe de Cierre y Lecciones Aprendidas](./docs/informe_cierre.md):** Síntesis del desarrollo anual, pivot tecnológico, retos resueltos y conclusiones.
+3. 🔬 **[Reporte Final de Pruebas de Regresión](./docs/reporte_testing_regresion.md):** Evidencia detallada de que el 100% de la suite de pruebas unitarias y E2E pasan satisfactoriamente.
 
 ---
 
 ## 🚀 Stack Tecnológico
 
-El proyecto se sustenta en una arquitectura moderna enfocada en el rendimiento y la escalabilidad:
-
-### Frontend
-- **Framework:** React 19 + Vite.
-- **Estilos:** Tailwind CSS v4 para diseño responsive y componentes consistentes.
-- **Enrutamiento:** React Router DOM para navegación tipo SPA.
-- **Iconografía:** Lucide React.
-- **Componentes Extra:** `react-day-picker`, `qrcode.react`, `pdf-parse`.
-
-### Backend & Servicios Integrados
-- **BaaS:** Supabase (PostgreSQL, Autenticación, Storage).
-- **Edge Functions:** Procesamiento serverless en Supabase con Deno (Ej: Webhooks de cobro).
-- **Pasarela de Pagos:** Integración nativa con MercadoPago.
-
-### Calidad y Testing
-- **Linter:** ESLint (Configuración estricta de React Hooks).
-- **Unit Testing:** Vitest, React Testing Library y Jest-DOM para garantizar la fiabilidad del código y los servicios (`sectorService`, `pricing`, `operarioService`).
+- **Frontend:** React 19 + Vite + Tailwind CSS v4 + React Router DOM v7.
+- **Backend & DB:** Supabase (PostgreSQL, Realtime, Edge Functions).
+- **Criptografía:** Bcrypt.js (Hasheo y autenticación).
+- **Pruebas:** Vitest (Unitarias/Integración) + Playwright (End-to-End).
 
 ---
 
@@ -44,13 +53,14 @@ Para ejecutar este proyecto en tu entorno local, asegúrate de contar con:
 ## 🛠️ Instalación y Configuración Local
 
 1. **Clonar e instalar dependencias:**
-   Una vez posicionado en el directorio raíz del repositorio, instala las dependencias de NPM:
    ```bash
+   git clone https://github.com/PenoffPablo/ParkScan.git
+   cd ParkScan
    npm install
    ```
 
 2. **Variables de Entorno:**
-   Crea un archivo `.env` o `.env.local` en la raíz del proyecto. Deberás incluir las credenciales vitales para el funcionamiento (pide acceso al administrador del proyecto si no las tienes):
+   Crea un archivo `.env.local` en la raíz del proyecto y completa las siguientes claves:
    ```env
    VITE_SUPABASE_URL="tu_url_de_supabase"
    VITE_SUPABASE_ANON_KEY="tu_anon_key_de_supabase"
@@ -60,40 +70,45 @@ Para ejecutar este proyecto en tu entorno local, asegúrate de contar con:
    ```bash
    npm run dev
    ```
-   El servidor de Vite se levantará típicamente en `http://localhost:5173`.
+   El servidor de Vite se levantará en `http://localhost:5173`.
 
 ---
 
 ## 🧪 Testing
 
-Una aplicación en producción requiere pruebas sólidas. Hemos implementado **Vitest** como motor de pruebas.
-
 Para ejecutar toda la batería de pruebas (unitarias, integración y E2E de Playwright):
 ```bash
 npm run test:all
 ```
-*(Si solo deseas ejecutar las pruebas unitarias rápidas, puedes utilizar `npm run test:unit`)*
+
+### Ejecutar pruebas individuales:
+- **Vitest (Pruebas unitarias):**
+  ```bash
+  npm run test:unit
+  ```
+- **Playwright (E2E - Headless):**
+  ```bash
+  npm run test:e2e
+  ```
+- **Playwright (Visualizar ejecución - Secuencial):**
+  ```bash
+  npx playwright test --headed --workers=1
+  ```
 
 ---
 
-## 🏗️ Arquitectura de Carpetas Destacada
+## 🏗️ Arquitectura de Carpetas
 
 ```text
 /
+├── docs/                 # Documentación y reportes de la Etapa 5 (Guía, Cierre, Testing)
 ├── src/
-│   ├── components/       # Componentes de interfaz reutilizables (Layouts, UI, etc.)
-│   ├── pages/            # Vistas principales separadas por rol (Admin, Operario, etc.)
-│   ├── services/         # Integración y llamadas a la API/Supabase (sectorService, etc.)
-│   ├── utils/            # Lógica de negocio modularizada (pricing, validaciones, etc.)
-│   └── App.jsx           # Punto de entrada y configuración de rutas
+│   ├── components/       # Componentes de interfaz (Layouts, UI, etc.)
+│   ├── pages/            # Vistas principales separadas por rol (Admin, Operario, Cliente)
+│   ├── services/         # Integración y llamadas a la API/Supabase
+│   ├── utils/            # Lógica de negocio (pricing, validaciones, servicios)
+│   └── App.jsx           # Enrutador principal
 ├── supabase/
-│   └── functions/        # Deno Edge Functions (ej. mp-webhook para MercadoPago)
+│   └── functions/        # Edge Functions (mp-webhook para MercadoPago)
 └── vercel.json           # Configuración de despliegue en Vercel
 ```
-
----
-
-## 🚀 Despliegue
-
-La aplicación frontend está lista para ser desplegada en **Vercel** o plataformas similares. 
-La configuración de enrutamiento necesaria para Single Page Applications ya se encuentra definida en el archivo `vercel.json` en la raíz del proyecto.
