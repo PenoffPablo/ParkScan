@@ -58,14 +58,12 @@ El Operario es el encargado de la gestión diaria, recepción de vehículos y co
 El cliente interactúa de forma autónoma con el sistema para agilizar su salida.
 
 ### 4.1. Visualización del Ticket
-- Al ingresar, el operario le brindará un código QR.
-- Escaneando este código con su teléfono móvil, el cliente accede al portal de Autogestión.
+- Al ingresar, el sistema de barrera de acceso le brindará un código QR con el codigo del ticket.
 
 ### 4.2. Portal de Autogestión y Pago Online
-1. El portal mostrará los datos de su estadía: Patente, Sector, Plaza, Hora de Ingreso y Tiempo Transcurrido.
-2. Al decidir retirarse, el cliente visualiza el monto total adeudado.
-3. **Pago con Mercado Pago:** Al pulsar "Pagar", el sistema lo redirige de forma segura a la pasarela de Mercado Pago.
-4. Tras completar el pago, el sistema valida la transacción y habilita la salida del vehículo automáticamente, liberando la plaza.
+1. Al dirigirse al kiosco de pago, el cliente debera escanear el código de ticket y se generará un qr de mercado pago
+2. Una vez pagado el ticket se actualizará la pantalla con la verificación del pago, El cliente tendrá 15 minutos para salir del estacionamiento.
+3. Al llegar a la barrera de salida, el cliente debe acercar el qr del ticket al lector, el sistema detectará el codigo del ticket pagado y levantará la barrera de salida.
 
 ---
 *Fin de la guía.*
