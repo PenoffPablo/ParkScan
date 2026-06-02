@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { Lock, User, ArrowLeft } from 'lucide-react';
+import bcrypt from 'bcryptjs';
 
 export default function Login({ role }) {
   const [usuario, setUsuario] = useState('');
@@ -23,15 +24,30 @@ export default function Login({ role }) {
         .from(tabla)
         .select('*')
         .eq('usuario', usuario)
-        .eq('password', password)
         .single();
 
       if (error || !data) {
         throw new Error('Credenciales incorrectas');
       }
 
+      // Handle mock array return or single object return
+      const user = Array.isArray(data) ? data[0] : data;
+      if (!user) {
+        throw new Error('Credenciales incorrectas');
+      }
+
+      // Check if operario is active
+      if (role === 'operario' && user.estado !== 'activo') {
+        throw new Error('Su usuario se encuentra inactivo. Consulte al administrador.');
+      }
+
+      const isMatch = bcrypt.compareSync(password, user.password);
+      if (!isMatch) {
+        throw new Error('Credenciales incorrectas');
+      }
+
       // Guardar sesión en local (MVP simple)
-      localStorage.setItem(`parkscan_${role}`, JSON.stringify(data));
+      localStorage.setItem(`parkscan_${role}`, JSON.stringify(user));
       
       // Redirigir al dashboard correspondiente
       if (role === 'admin') navigate('/admin/dashboard');

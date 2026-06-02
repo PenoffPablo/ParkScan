@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase';
+import bcrypt from 'bcryptjs';
 
 /**
  * Obtiene la lista de todos los operarios ordenada por nombre.
@@ -19,10 +20,15 @@ export async function getOperarios() {
  * @param {string|number} [id] - ID opcional para actualización.
  */
 export async function saveOperario(operarioData, id = null) {
+  const dataToSave = { ...operarioData };
+  if (dataToSave.password) {
+    dataToSave.password = bcrypt.hashSync(dataToSave.password, 10);
+  }
+
   if (id) {
     const { data, error } = await supabase
       .from('operarios')
-      .update(operarioData)
+      .update(dataToSave)
       .eq('id_operario', id)
       .select()
       .single();
@@ -31,7 +37,7 @@ export async function saveOperario(operarioData, id = null) {
   } else {
     const { data, error } = await supabase
       .from('operarios')
-      .insert([operarioData])
+      .insert([dataToSave])
       .select()
       .single();
     if (error) throw error;

@@ -1,6 +1,7 @@
 import { Outlet, Link, useNavigate } from 'react-router-dom';
 import { LogOut, Monitor, CreditCard, Clock, Menu, X } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { supabase } from '@/lib/supabase';
 
 export default function OperarioLayout() {
   const navigate = useNavigate();
@@ -10,7 +11,28 @@ export default function OperarioLayout() {
   useEffect(() => {
     const session = localStorage.getItem('parkscan_operario');
     if (session) {
-      setOperador(JSON.parse(session));
+      const op = JSON.parse(session);
+      setOperador(op);
+
+      const checkStatus = async () => {
+        try {
+          const { data, error } = await supabase
+            .from('operarios')
+            .select('estado')
+            .eq('id_operario', op.id_operario)
+            .single();
+
+          const user = Array.isArray(data) ? data[0] : data;
+          if (error || !user || user.estado !== 'activo') {
+            localStorage.removeItem('parkscan_operario');
+            alert('Su sesión ha expirado o su usuario se encuentra inactivo.');
+            navigate('/operario/login');
+          }
+        } catch (err) {
+          console.error('Error checking status:', err);
+        }
+      };
+      checkStatus();
     }
   }, []);
 
@@ -64,13 +86,13 @@ export default function OperarioLayout() {
             <Monitor className="w-5 h-5 text-dark-muted group-hover:text-brand transition-colors" />
             <span className="font-semibold">Control de Plazas</span>
           </Link>
-          <button 
-            className="flex items-center w-full gap-3 px-4 py-3 rounded-xl hover:bg-white/5 transition-all group text-left"
-            onClick={() => alert("Pendiente de implementar: Ingreso de Vehículo")}
+          <Link 
+            to="/operario/ingreso" 
+            className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/5 transition-all group"
           >
             <Clock className="w-5 h-5 text-dark-muted group-hover:text-brand transition-colors" />
             <span className="font-semibold">Ingreso Manual</span>
-          </button>
+          </Link>
           <Link 
             to="/operario/cobro" 
             className="flex items-center w-full gap-3 px-4 py-3 rounded-xl hover:bg-white/5 transition-all group text-left"

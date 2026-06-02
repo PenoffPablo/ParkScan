@@ -13,6 +13,14 @@ test.describe('Flujos de Operarios y Administración - ParkScan', () => {
       }));
     });
 
+    // Mock para validar que el operario está activo (checkStatus en layout)
+    await page.route('**/rest/v1/operarios*', async (route) => {
+      await route.fulfill({
+        status: 200,
+        json: [{ id_operario: 'op-123', nombre: 'Carlos', apellido: 'Operario', usuario: 'carlos_op', estado: 'activo' }]
+      });
+    });
+
     // Mock de búsqueda de ticket
     await page.route('**/rest/v1/tickets?*', async (route, request) => {
       if (request.method() === 'GET') {

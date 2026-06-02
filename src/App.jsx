@@ -7,6 +7,7 @@ import AdminLayout from './components/AdminLayout';
 import OperarioLogin from './pages/operario/Login';
 import OperarioDashboard from './pages/operario/Dashboard';
 import OperarioCobro from './pages/operario/Cobro';
+import OperarioIngreso from './pages/operario/Ingreso';
 import OperarioLayout from './components/OperarioLayout';
 import ClienteHome from './pages/cliente/Home';
 import ClientePago from './pages/cliente/Pago';
@@ -59,6 +60,7 @@ function App() {
           } 
         >
           <Route path="dashboard" element={<OperarioDashboard />} />
+          <Route path="ingreso" element={<OperarioIngreso />} />
           <Route path="cobro" element={<OperarioCobro />} />
         </Route>
       </Routes>

@@ -39,7 +39,7 @@ test.describe('Flujo de Pago e Integración API - ParkScan', () => {
 
     // Llenar el input y buscar
     await page.getByPlaceholder('PS-XXXX-XXXX').fill('PS-1234-5678');
-    
+
     // El botón tiene un icono ArrowRight, no tiene texto, así que buscamos por etiqueta button en el div
     // O más simple, disparamos Enter en el input
     await page.getByPlaceholder('PS-XXXX-XXXX').press('Enter');
@@ -64,8 +64,6 @@ test.describe('Flujo de Pago e Integración API - ParkScan', () => {
     let dialogMessage = '';
     page.on('dialog', async dialog => {
       dialogMessage = dialog.message();
-      // Esperar 5 segundos para que se pueda leer visualmente el alert
-      await page.waitForTimeout(5000);
       await dialog.accept();
     });
 
@@ -77,8 +75,8 @@ test.describe('Flujo de Pago e Integración API - ParkScan', () => {
 
     // Aserción: Esperar un segundo para que el alert se dispare y validar el mensaje
     // Playwright maneja las promesas rápido, usaremos waitForTimeout corto o chequearemos la variable
-    await page.waitForTimeout(1000); 
-    
+    await page.waitForTimeout(1000);
+
     // Validar que el alert contuvo el mensaje de error de la API
     expect(dialogMessage).toContain('Mercado Pago no responde temporalmente');
   });
