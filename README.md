@@ -59,7 +59,7 @@ Para ejecutar este proyecto en tu entorno local, asegúrate de contar con:
    npm install
    ```
 
-2. **Variables de Entorno:**
+2. **Variables De Entorno:**
    Crea un archivo `.env.local` en la raíz del proyecto y completa las siguientes claves:
    ```env
    VITE_SUPABASE_URL="tu_url_de_supabase"
